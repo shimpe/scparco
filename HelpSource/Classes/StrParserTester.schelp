@@ -1,0 +1,16 @@
+TITLE:: StrParserTester
+summary:: unit tests for StrParser
+categories:: Parsing Tools
+related:: Classes/StrParser
+
+DESCRIPTION::
+unit tests for StrParser
+
+
+
+
+EXAMPLES::
+
+code::
+(FIXME add some example code)
+::

@@ -1,3 +1,11 @@
+/*
+[general]
+title = "RegexParserTester"
+summary = "unit tests for RegexParser"
+categories = "Parsing Tools"
+related = "Classes/RegexParser"
+description = '''unit tests for RegexParser'''
+*/
 RegexParserTester : UnitTest {
 	*new {
 		^super.new.init();

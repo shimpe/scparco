@@ -1,3 +1,11 @@
+/*
+[general]
+title = "StrParserTester"
+summary = "unit tests for StrParser"
+categories = "Parsing Tools"
+related = "Classes/StrParser"
+description = '''unit tests for StrParser'''
+*/
 StrParserTester : UnitTest {
 	*new {
 		^super.new.init();

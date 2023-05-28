@@ -1,20 +1,46 @@
+/*
+[general]
+title = "SequenceOf"
+summary = "a Parser that tries to match multiple Parsers and stops when the first one succeeds"
+categories = "Parsing Tools"
+related = "Classes/Parser"
+description = '''
+SequenceOf takes a list of Parsers, and tries to match them one by one (in the order in which they were supplied). All Parsers in a SequenceOf parser must succeed for the SequenceOf to succeed.
+
+Note: an easy mistake to make (and with sometimes puzzling consequences) is to forget that the parsers to be supplied to SequenceOf must be in a list.
+'''
+*/
 SequenceOf : Parser {
+	/*
+	[classmethod.new]
+	description = '''makes a new SequenceOf parser'''
+	[classmethod.new.args]
+	parsers = '''a list of Parser'''
+	*/
 	*new {
 		| parsers |
 		^super.new.init(parsers);
 	}
 
+	/*
+	[method.init]
+	description = '''initializes a new SequenceOf parser'''
+	[classmethod.init.args]
+	parsers = '''a list of Parser'''
+	[classmethod.init.returns]
+	a Parser that parses a Sequence of user supplied parsers
+	*/
 	init {
 		| parsers |
 		this.parserStateTransformer = {
 			| parserStateIn |
 			var outputState;
-			var nextState = parserStateIn;
-			var results = [];
 			if (parserStateIn.isError == true) {
 				parserStateIn;
 			} {
+				var results = [];
 				var keepGoing = true;
+				var nextState = parserStateIn;
 				parsers.do({
 					| parser, idx |
 					if (keepGoing) {
@@ -23,15 +49,15 @@ SequenceOf : Parser {
 					if (nextState.isError == true)
 					{
 						keepGoing = false;
-					};
-					if (keepGoing) {
+					} {
 						results = results.add(nextState.result);
 					}
 				});
 				if (keepGoing) {
 					outputState = nextState.updateResult(results);
+
 				} {
-					outputState = nextState.updateError("Couldn't match sequence at index" + nextState.index);
+					outputState = parserStateIn.updateError("Couldn't match sequence at index" + nextState.index);
 				};
 				outputState;
 			};

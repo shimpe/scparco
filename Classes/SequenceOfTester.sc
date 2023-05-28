@@ -1,3 +1,11 @@
+/*
+[general]
+title = "SequenceOfTester"
+summary = "unit tests for SequenceOf"
+categories = "Parsing Tools"
+related = "Classes/SequenceOf"
+description = '''unit tests for SequenceOf'''
+*/
 SequenceOfTester : UnitTest {
 	*new {
 		^super.new.init();

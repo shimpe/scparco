@@ -1,0 +1,16 @@
+TITLE:: SequenceOfTester
+summary:: unit tests for SequenceOf
+categories:: Parsing Tools
+related:: Classes/SequenceOf
+
+DESCRIPTION::
+unit tests for SequenceOf
+
+
+
+
+EXAMPLES::
+
+code::
+(FIXME add some example code)
+::

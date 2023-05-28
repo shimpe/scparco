@@ -1,3 +1,11 @@
+/*
+[general]
+title = "ManyTester"
+summary = "unit tests for Many and ManyOne"
+categories = "Parsing Tools"
+related = "Classes/Many, Classes/ManyOne"
+description = '''unit tests for Many and ManyOne'''
+*/
 ManyTester : UnitTest {
 	*new {
 		^super.new.init();

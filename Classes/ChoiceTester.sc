@@ -1,3 +1,11 @@
+/*
+[general]
+title = "ChoiceTester"
+summary = "unit tests for Choice"
+categories = "Parsing Tools"
+related = "Classes/Choice"
+description = '''unit tests for Choice'''
+*/
 ChoiceTester : UnitTest {
 	*new {
 		^super.new.init();

@@ -1,0 +1,16 @@
+TITLE:: ManyTester
+summary:: unit tests for Many and ManyOne
+categories:: Parsing Tools
+related:: Classes/Many, Classes/ManyOne
+
+DESCRIPTION::
+unit tests for Many and ManyOne
+
+
+
+
+EXAMPLES::
+
+code::
+(FIXME add some example code)
+::

@@ -1,10 +1,9 @@
-/*
-[general]
-title = "Parser"
-summary = "a base class for Parsers"
-categories = "Parsing Tools"
-related = "Classes/ParserState, Classes/StrParser, Classes/RegexParser, Classes/Choice, Classes/SequenceOf, Classes/Many, Classes/ManyOne, Classes/ParserFactory"
-description = '''
+TITLE:: Parser
+summary:: a base class for Parsers
+categories:: Parsing Tools
+related:: Classes/ParserState, Classes/StrParser, Classes/RegexParser, Classes/Choice, Classes/SequenceOf, Classes/Many, Classes/ManyOne, Classes/ParserFactory
+
+DESCRIPTION::
 Parser is the base class for everything that performs parsing in this library.
 Parsers for complex systems are made by combining together Parsers for smaller systems
 using special-purpose parsers like Choice and SequenceOf.
@@ -15,92 +14,49 @@ E.g. in an IntegerParser, it would make sense to add a map that transforms the r
 One can call chain on a Parser to decide how parsing will proceed based on the parsing results so far. See the unit tests for some example.
 
 One can call errorMap on a Parser to contextualize a parsing error message (i.e. replace the generic error message with something that makes sense to the end user - in one case an IntegerParser could represent a house number whereas in another case it could represent a number of apples. Using errorMap you can warn that the system failed to parse a "house number" as opposed to warning that it failed to parse an "integer").
-'''
-*/
-Parser {
-	/*
-	[method.parserStateTransformer]
-	description = '''
+
+
+
+CLASSMETHODS::
+
+METHOD:: new
+creates a new Parser
+
+returns:: Parser
+
+INSTANCEMETHODS::
+
+METHOD:: parserStateTransformer
 	a function that takes a ParserState and returns an updated ParserState
 	this function forms the heart of every Parser
-	'''
-	[method.parserStateTransformer.returns]
-	what = "ParserState"
-	*/
-	var <>parserStateTransformer;
+	
 
-	/*
-	[classmethod.new]
-	description = "creates a new Parser"
-	[classmethod.new.returns]
-	what = "Parser"
-	*/
-	*new {
-		^super.new.parserInit;
-	}
+returns:: ParserState
+METHOD:: parserInit
+initializes a new Parser
 
-	/*
-	[method.parserInit]
-	description = "initializes a new Parser"
-	[method.parserInit.returns]
-	what = "Parser"
-	*/
-	parserInit {
-		this.parserStateTransformer = nil;
-	}
+returns:: Parser
+METHOD:: run
+runs the Parser on a piece of text and produces a ParserState. The ParserState contains the parse result or error information. Running the parser happens by calling its parserStateTransformer function on an initial state constructed from the targetString.
 
-	/*
-	[method.run]
-	description = "runs the Parser on a piece of text and produces a ParserState. The ParserState contains the parse result or error information. Running the parser happens by calling its parserStateTransformer function on an initial state constructed from the targetString."
-	[method.run.args]
-	targetString = "text to be parsed"
-	[method.run.returns]
-	what = "ParserState"
-	*/
-	run {
-		| targetString |
-		var initialState = ParserState(
-			targetString: targetString,
-			index: 0,
-			result: nil,
-			isError: false,
-			errorMsg: "");
-		^this.parserStateTransformer.(initialState);
-	}
+ARGUMENT:: targetString
+text to be parsed
 
-	/*
-	[method.map]
-	description = '''
+returns:: ParserState
+METHOD:: map
 	map takes a Parser an produces a new Parser that manipulates its parsing result according to the wishes of the user.
 
 	map allows an arbitrary transformation on a parser result to be specified
 	fn is the function that maps the parse result to the desired result
 
 	e.g. you could use map to transform the result of an IntegerParser from a string to an actual integer
-	'''
-	[method.map.args]
-	fn = "a user-provided function that transforms the string parse result into the desired parse result (e.g. conversion from string to integer)"
-	[method.map.returns]
-	what = "a new Parser that will transform the parse result using the fn function"
-	*/
-	map {
-		| fn |
-		var newP = Parser();
-		newP.parserStateTransformer = {
-			| parserState |
-			var nextState = this.parserStateTransformer.(parserState);
-			if (nextState.isError) {
-				nextState;
-			} {
-				nextState.updateResult(fn.(nextState.result));
-			}
-		};
-		^newP;
-	}
+	
 
-	/*
-	[method.chain]
-	description = '''
+ARGUMENT:: fn
+a user-provided function that transforms the string parse result into the desired parse result (e.g. conversion from string to integer)
+
+returns:: a new Parser that will transform the parse result using the fn function
+METHOD:: chain
 	several ways to explain the same thing:
 
 	fn takes parse result and returns a parser
@@ -116,52 +72,25 @@ Parser {
 	and runs that next parser on the state so far to return the next state
 
 	because map and chain take Parsers and produce new Parsers, they can also be combined in any order you like
-	'''
-	[method.chain.args]
-	fn = "user supplied function that takes parse result so far and returns a new Parser based on that result"
-	[method.chain.returns]
-	what = "Parser"
-	*/
-	chain {
-		| fn |
-		var newP = Parser();
-		newP.parserStateTransformer = {
-			| parserState |
-			var nextState;
-			nextState = this.parserStateTransformer.(parserState);
-			if (nextState.isError)
-			{
-				nextState;
-			} {
-				var nextParser = fn.(nextState.result);
-				nextParser.parserStateTransformer.(nextState);
-			};
-		};
-		^newP;
-	}
+	
 
-	/*
-	[method.errorMap]
-	description ='''
+ARGUMENT:: fn
+user supplied function that takes parse result so far and returns a new Parser based on that result
+
+returns:: Parser
+METHOD:: errorMap
 	errorMap takes a Parser and produces a new Parser with a modified error message. This allows you to contextualize the  error messages (e.g. warn about a "missing house number" instead of a generic "failed to parse integer".)
 	[method.errorMap.args]
 	fn = "user supplied function that receives generic error msg and index in the targetString at the moment parsing goes wrong, and returns a new error msg"
 	[method.errorMap.returns]
 	what = "Parser"
-	'''
-	*/
-	errorMap {
-		| fn |
-		var newP = Parser();
-		newP.parserStateTransformer = {
-			| parserState |
-			var nextState = this.parserStateTransformer.(parserState);
-			if (nextState.isError.not) {
-				nextState;
-			} {
-				nextState.updateError(fn.(nextState.errorMsg, nextState.index));
-			}
-		};
-		^newP;
-	}
-}
+	
+
+returns:: this instance of Parser
+
+
+EXAMPLES::
+
+code::
+(FIXME add some example code)
+::

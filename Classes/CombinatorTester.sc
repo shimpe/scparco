@@ -1,3 +1,11 @@
+/*
+[general]
+title = "CombinatorTester"
+summary = "unit tests using some ParserFactory methods"
+categories = "Parsing Tools"
+related = "Classes/ParserFactory"
+description = '''unit tests using some ParserFactory methods'''
+*/
 CombinatorTester : UnitTest {
 	*new {
 		^super.new.init();
