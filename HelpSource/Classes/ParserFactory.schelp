@@ -4,7 +4,7 @@ categories:: Parser Tools
 related:: Classes/Parser
 
 DESCRIPTION::
-ParserFactory is a util that can create some parsers and families of parsers for common use cases. These parsers are built as combinations of more primitive library provided parsers. ParserFactory only implements classmethods, meaning you can call them using the syntax ParserFactory.makeIntegerParser (i.e. there's no need to create a ParserFactory instance first).
+ParserFactory is a util that can create some parsers and families of parsers for common use cases. These parsers are built as combinations of more primitive library provided parsers. In some cases (e.g. html tag parser), you may want to build your own parser to make it easier to extract all information. ParserFactory only implements classmethods, meaning you can call them using the syntax ParserFactory.makeIntegerParser (i.e. there's no need to create a ParserFactory instance first).
 
 
 
@@ -35,6 +35,50 @@ METHOD:: makeFloatParser
 class to parse a float number and convert it from string to Float
 
 returns:: Parser that can parse a (signed) float number
+METHOD:: makeEmailParser
+class to parse an email address
+
+returns:: Parser that can parse an email address (some extremely exotic uses cases are excluded)
+METHOD:: makeUrlParser
+class to parse a URL
+
+returns:: Parser that can parse a URL
+METHOD:: makeLetters
+class to parse one or more letters
+
+returns:: Parser that can parse one or more letters
+METHOD:: makeDigits
+class to parse one or more digits
+
+returns:: Parser that can parse one or more digits
+METHOD:: makeAlphanumeric
+class to parse an alphanumeric value
+
+returns:: Parser that can parse an alphanumeric value
+METHOD:: makeIpAddressParser
+class to parse an IPv4/IPv6 address
+
+returns:: Parser that can parse an IPv4/IPv6 address
+METHOD:: makeYYYMMddParser
+class to parse an YYY-MM-dd date (separator - . or /)
+
+returns:: Parser that can parse an an YYY-MM-dd date 
+METHOD:: makeddMMYYYYParser
+class to parse an dd-MM-YYYY parser (separators - . or /) 
+
+returns:: Parser that can parse an dd-MM-YYYY date
+METHOD:: makeHtmlTagParser
+class to match an html tag (with attributes). The tag with attributes is matched as a whole. No subparsers are present to find the individual attributes.
+
+returns:: Parser that can parse an html tag with attributes
+METHOD:: makeWs
+class to match zero or more whitespace characters
+
+returns:: Parser that parses multiple whitespace characters [\t\r\n\f]
+METHOD:: makeWsOne
+class to match one or more whitespace characters
+
+returns:: Parser that parses multiple whitespace characters [\t\r\n\f]
 METHOD:: makeSepBy
 generates a function that expects a ValueParser and produces a parser that matches zero or more separated values (see example code).
 
@@ -67,6 +111,48 @@ returns:: ParserFactory
 EXAMPLES::
 
 code::
+	(
+	var intp = ParserFactory.makeIntegerParser;
+	var result = intp.run("3.14"); // expected result: 3
+	result.result.postcs;
+	)
+	(
+	var floatp = ParserFactory.makeFloatParser;
+	var result = floatp.run("3.14"); // expected result: 3.14
+	result.result.postcs;
+	)
+	(
+	var emailp = ParserFactory.makeEmailParser;
+	var result = emailp.run("fubar.smalltalk@brainiac.co.uk");
+	result.result.postcs; // result: "fubar.smalltalk@brainiac.co.uk"
+	)
+	(
+	var urlp = ParserFactory.makeUrlParser;
+	var result = urlp.run("https://www.google.com/givemebreak?parameter=value&&parameter2=56");
+	result.result.postcs; // result: "https://www.google.com/givemebreak?parameter=value&&parameter2=56"
+	)
+	(
+	var ip = ParserFactory.makeIpAddressParser;
+	var result = ip.run("127.0.0.1");
+	var result2 = ip.run("2001:0db8:85a3:0000:0000:8a2e:0370:7334");
+	result.result.postcs;
+	result2.result.postcs;
+	)
+	(
+	var ymd = ParserFactory.makeYYYYMMddParser;
+	var result = ymd.run("2023-06-02");
+	result.result.postcs;
+	)
+	(
+	var dmy = ParserFactory.makeddMMYYYYParser;
+	var result = dmy.run("13/02/1975");
+	result.result.postcs;
+	)
+	(
+	var tag = ParserFactory.makeHtmlTagParser;
+	var result = tag.run("<element value=\"56\">");
+	result.result.postcs;
+	)
 	(
 	var betweenBrackets = ParserFactory.makeBetween(StrParser("("), StrParser(")"));
 	var lettersBetweenBrackets = betweenBrackets.(RegexParser("[A-Za-z]+"));

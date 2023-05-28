@@ -5,7 +5,7 @@ summary = "a factory for commonly used parsers, made from smaller library provid
 categories = "Parser Tools"
 related = "Classes/Parser"
 description = '''
-ParserFactory is a util that can create some parsers and families of parsers for common use cases. These parsers are built as combinations of more primitive library provided parsers. ParserFactory only implements classmethods, meaning you can call them using the syntax ParserFactory.makeIntegerParser (i.e. there's no need to create a ParserFactory instance first).
+ParserFactory is a util that can create some parsers and families of parsers for common use cases. These parsers are built as combinations of more primitive library provided parsers. In some cases (e.g. html tag parser), you may want to build your own parser to make it easier to extract all information. ParserFactory only implements classmethods, meaning you can call them using the syntax ParserFactory.makeIntegerParser (i.e. there's no need to create a ParserFactory instance first).
 '''
 */
 ParserFactory {
@@ -74,6 +74,96 @@ ParserFactory {
 	*/
 	*makeFloatParser {
 		^RegexParser("[+-]?([0-9]*[.])?[0-9]+").map({|txt| txt.asFloat });
+	}
+
+	/*
+	[classmethod.makeEmailParser]
+	description = "class to parse an email address"
+	[classmethod.makeEmailParser.returns]
+	what = "Parser that can parse an email address (some extremely exotic uses cases are excluded)"
+	*/
+	*makeEmailParser {
+		^RegexParser("[a-z0-9!#$%&\'*+/=?^_‘{|}~-]+(\\\\.[a-z0-9!#$%&\'*+/=?^_‘{|}~-]+)*@([a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
+	}
+
+	/*
+	[classmethod.makeUrlParser]
+	description = "class to parse a URL"
+	[classmethod.makeUrlParser.returns]
+	what = "Parser that can parse a URL"
+	*/
+	*makeUrlParser {
+		^RegexParser("https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#()?&//=]*)");
+	}
+
+	/*
+	[classmethod.makeLetters]
+	description = "class to parse one or more letters"
+	[classmethod.makeLetters.returns]
+	what = "Parser that can parse one or more letters"
+	*/
+	*makeLetters {
+		^RegexParser("[a-zA-Z]+");
+	}
+
+	/*
+	[classmethod.makeDigits]
+	description = "class to parse one or more digits"
+	[classmethod.makeDigits.returns]
+	what = "Parser that can parse one or more digits"
+	*/
+	*makeDigits {
+		^RegexParser("[0-9]+");
+	}
+
+	/*
+	[classmethod.makeAlphanumeric]
+	description = "class to parse an alphanumeric value"
+	[classmethod.makeAlphanumeric.returns]
+	what = "Parser that can parse an alphanumeric value"
+	*/
+	*makeAlphanumeric {
+		^RegexParser("[a-zA-Z0-9]+");
+	}
+
+	/*
+	[classmethod.makeIpAddressParser]
+	description = "class to parse an IPv4/IPv6 address"
+	[classmethod.makeIpAddressParser.returns]
+	what = "Parser that can parse an IPv4/IPv6 address"
+	*/
+	*makeIpAddressParser {
+		^RegexParser("((^\\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\\s*$)|(^\\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)?\\s*$))");
+	}
+
+	/*
+	[classmethod.makeYYYMMddParser]
+	description = "class to parse an YYY-MM-dd date (separator - . or /)"
+	[classmethod.makeYYYMMddParser.returns]
+	what = "Parser that can parse an an YYY-MM-dd date "
+	*/
+	*makeYYYYMMddParser {
+		^RegexParser("([12]\\d{3}(\\/|-|\\.)(0[1-9]|1[0-2])(\\/|-|\\.)(0[1-9]|[12]\\d|3[01]))");
+	}
+
+	/*
+	[classmethod.makeddMMYYYYParser]
+	description = "class to parse an dd-MM-YYYY parser (separators - . or /) "
+	[classmethod.makeddMMYYYYParser.returns]
+	what = "Parser that can parse an dd-MM-YYYY date"
+	*/
+	*makeddMMYYYYParser {
+		^RegexParser("(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|(?:(?:29|30)(\\/|-|\\.)(?:0?[1,3-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|^(?:29(\\/|-|\\.)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})");
+	}
+
+	/*
+	[classmethod.makeHtmlTagParser]
+	description = "class to match an html tag (with attributes). The tag with attributes is matched as a whole. No subparsers are present to find the individual attributes."
+	[classmethod.makeHtmlTagParser.returns]
+	what = "Parser that can parse an html tag with attributes"
+	*/
+	*makeHtmlTagParser {
+		^RegexParser("<\\/?[\\w\\s]*>|<.+[\\W]>");
 	}
 
 	/*
@@ -217,6 +307,48 @@ ParserFactory {
 	/*
 	[examples]
 	what = '''
+	(
+	var intp = ParserFactory.makeIntegerParser;
+	var result = intp.run("3.14"); // expected result: 3
+	result.result.postcs;
+	)
+	(
+	var floatp = ParserFactory.makeFloatParser;
+	var result = floatp.run("3.14"); // expected result: 3.14
+	result.result.postcs;
+	)
+	(
+	var emailp = ParserFactory.makeEmailParser;
+	var result = emailp.run("fubar.smalltalk@brainiac.co.uk");
+	result.result.postcs; // result: "fubar.smalltalk@brainiac.co.uk"
+	)
+	(
+	var urlp = ParserFactory.makeUrlParser;
+	var result = urlp.run("https://www.google.com/givemebreak?parameter=value&&parameter2=56");
+	result.result.postcs; // result: "https://www.google.com/givemebreak?parameter=value&&parameter2=56"
+	)
+	(
+	var ip = ParserFactory.makeIpAddressParser;
+	var result = ip.run("127.0.0.1");
+	var result2 = ip.run("2001:0db8:85a3:0000:0000:8a2e:0370:7334");
+	result.result.postcs;
+	result2.result.postcs;
+	)
+	(
+	var ymd = ParserFactory.makeYYYYMMddParser;
+	var result = ymd.run("2023-06-02");
+	result.result.postcs;
+	)
+	(
+	var dmy = ParserFactory.makeddMMYYYYParser;
+	var result = dmy.run("13/02/1975");
+	result.result.postcs;
+	)
+	(
+	var tag = ParserFactory.makeHtmlTagParser;
+	var result = tag.run("<element value=\"56\">");
+	result.result.postcs;
+	)
 	(
 	var betweenBrackets = ParserFactory.makeBetween(StrParser("("), StrParser(")"));
 	var lettersBetweenBrackets = betweenBrackets.(RegexParser("[A-Za-z]+"));
