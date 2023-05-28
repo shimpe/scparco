@@ -59,7 +59,7 @@ METHOD:: makeIpAddressParser
 class to parse an IPv4/IPv6 address
 
 returns:: Parser that can parse an IPv4/IPv6 address
-METHOD:: makeYYYMMddParser
+METHOD:: makeYYYYMMddParser
 class to parse an YYY-MM-dd date (separator - . or /)
 
 returns:: Parser that can parse an an YYY-MM-dd date 
@@ -79,6 +79,10 @@ METHOD:: makeWsOne
 class to match one or more whitespace characters
 
 returns:: Parser that parses multiple whitespace characters [\t\r\n\f]
+METHOD:: makeIdentifierParser
+class to match an identifier as used in many programming languages
+
+returns:: Parser that parses an identifier
 METHOD:: makeSepBy
 generates a function that expects a ValueParser and produces a parser that matches zero or more separated values (see example code).
 

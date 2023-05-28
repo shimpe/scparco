@@ -137,9 +137,9 @@ ParserFactory {
 	}
 
 	/*
-	[classmethod.makeYYYMMddParser]
+	[classmethod.makeYYYYMMddParser]
 	description = "class to parse an YYY-MM-dd date (separator - . or /)"
-	[classmethod.makeYYYMMddParser.returns]
+	[classmethod.makeYYYYMMddParser.returns]
 	what = "Parser that can parse an an YYY-MM-dd date "
 	*/
 	*makeYYYYMMddParser {
@@ -184,6 +184,16 @@ ParserFactory {
 	*/
 	*makeWsOne {
 		^RegexParser("\\s+");
+	}
+
+	/*
+	[classmethod.makeIdentifierParser]
+	description = "class to match an identifier as used in many programming languages"
+	[classmethod.makeIdentifierParser.returns]
+	what = '''Parser that parses an identifier'''
+	*/
+	*makeIdentifierParser {
+		^RegexParser("[_a-zA-Z][_a-zA-Z0-9]*");
 	}
 
 	/*
