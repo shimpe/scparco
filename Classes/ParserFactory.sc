@@ -114,24 +114,29 @@ ParserFactory {
 				var results = [];
 				var nextState = parserState;
 				var keepTrying = true;
-				while ({keepTrying}) {
-					var thingWeWantState = valueParser.parserStateTransformer.(nextState);
-					if (thingWeWantState.isError) {
-						keepTrying = false;
-					} {
-						var separatorState;
-						results = results.add(thingWeWantState.result);
-						nextState = thingWeWantState;
-						separatorState = separatorParser.parserStateTransformer.(nextState);
-						if (separatorState.isError) {
+				if (parserState.isError) {
+					parserState;
+				}{
+					while ({keepTrying}) {
+						var thingWeWantState = valueParser.parserStateTransformer.(nextState);
+						if (thingWeWantState.isError) {
 							keepTrying = false;
 						} {
-							nextState = separatorState;
+							var separatorState;
+							results = results.add(thingWeWantState.result);
+						nextState = thingWeWantState;
+						separatorState = separatorParser.parserStateTransformer.(nextState);
+							if (separatorState.isError) {
+								keepTrying = false;
+							} {
+								nextState = separatorState;
+							}
 						}
-					}
-				};
+					};
 
-				nextState = nextState.updateResult(results);
+					nextState = nextState.updateResult(results);
+
+				}
 			};
 			newP;
 		}
@@ -155,30 +160,33 @@ ParserFactory {
 				var results = [];
 				var nextState = parserState;
 				var keepTrying = true;
-				while ({keepTrying}) {
-					var thingWeWantState = valueParser.parserStateTransformer.(nextState);
-					if (thingWeWantState.isError) {
-						keepTrying = false;
-					} {
-						var separatorState;
-						results = results.add(thingWeWantState.result);
-						nextState = thingWeWantState;
-						separatorState = separatorParser.parserStateTransformer.(nextState);
-						if (separatorState.isError) {
+				if (parserState.isError) {
+					parserState;
+				}{
+					while ({keepTrying}) {
+						var thingWeWantState = valueParser.parserStateTransformer.(nextState);
+						if (thingWeWantState.isError) {
 							keepTrying = false;
 						} {
-							nextState = separatorState;
+							var separatorState;
+							results = results.add(thingWeWantState.result);
+							nextState = thingWeWantState;
+							separatorState = separatorParser.parserStateTransformer.(nextState);
+							if (separatorState.isError) {
+								keepTrying = false;
+							} {
+								nextState = separatorState;
+							}
 						}
-					}
-				};
+					};
 
-				results.postln;
-				if (results.size == 0) {
-					nextState = nextState.updateError("SepByOne: Unable to capture any results at index" + nextState.index);
-				} {
-					nextState = nextState.updateResult(results);
-				};
-				nextState;
+					if (results.size == 0) {
+						nextState = nextState.updateError("SepByOne: Unable to capture any results at index" + nextState.index);
+					} {
+						nextState = nextState.updateResult(results);
+					};
+					nextState;
+				}
 			};
 			newP;
 		}
