@@ -77,6 +77,26 @@ ParserFactory {
 	}
 
 	/*
+	[classmethod.makeWs]
+	description = "class to match zero or more whitespace characters"
+	[classmethod.makeWs.returns]
+	what = '''Parser that parses multiple whitespace characters [\t\r\n\f]'''
+	*/
+	*makeWs {
+		^RegexParser("\\s*");
+	}
+
+	/*
+	[classmethod.makeWsOne]
+	description = "class to match one or more whitespace characters"
+	[classmethod.makeWsOne.returns]
+	what = '''Parser that parses multiple whitespace characters [\t\r\n\f]'''
+	*/
+	*makeWsOne {
+		^RegexParser("\\s+");
+	}
+
+	/*
 	[classmethod.makeSepBy]
 	description = "generates a function that expects a ValueParser and produces a parser that matches zero or more separated values (see example code)."
 	[classmethod.makeSepBy.args]
