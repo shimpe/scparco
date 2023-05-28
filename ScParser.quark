@@ -1,0 +1,8 @@
+{
+  name : "ScParser",
+  summary: "Quark to simplify parsing text",
+  version: "0.0.1",
+  schelp: "ScParser.schelp",
+  license: "GPL3",
+  copyright: "Stefaan Himpe, 2023"
+}
