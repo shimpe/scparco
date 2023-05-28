@@ -1,7 +1,7 @@
 # scparco
 
 <img src="https://github.com/shimpe/scparco/blob/main/image/logo.png?raw=true" width="250" height="250"/>
-Library of parser combinators for supercollider. Here's a non-trivial example for parsing and evaluating a mathematical expresssion.
+GPLv3 Library of parser combinators for supercollider. Here's a non-trivial example for parsing and evaluating a mathematical expresssion.
 
 <pre><code>
 (
