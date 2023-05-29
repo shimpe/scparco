@@ -7,4 +7,5 @@ ManyTester.run;
 CombinatorTester.run;
 LongestChoiceTester.run;
 LookAheadTester.run;
+OptionalTester.run;
 )

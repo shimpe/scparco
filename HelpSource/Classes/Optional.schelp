@@ -1,0 +1,43 @@
+TITLE:: Optional
+summary:: a specialized Parser that can match zero or one Parser
+categories:: Parsing Tools
+related:: Classes/Parser
+
+DESCRIPTION::
+Optional is a Parser that matches zero or one Parser. If it fails, it returns a result of nil.
+
+
+
+CLASSMETHODS::
+
+METHOD:: new
+new creates a new Optional Parser
+
+ARGUMENT:: parser
+a Parser
+
+returns:: Optional
+
+INSTANCEMETHODS::
+
+METHOD:: init
+init initializes the Optional parser with a suitable parserStateTransformer function that tries to match but succeeds even if the match fails. A failed Optional returns a parse result of nil.
+
+ARGUMENT:: parser
+a Parser
+
+returns:: Optional
+
+EXAMPLES::
+
+code::
+	(
+	var s1 = StrParser("hello!");
+	var s2 = Optional(StrParser("bye!"));
+	var text = "hello!hello!";
+	var seq = SequenceOf([s1,s2,s1]);
+	var result = seq.run(text); // [ "hello!", nil, "hello!" ]
+	result.result.postcs;
+	)
+	
+::
