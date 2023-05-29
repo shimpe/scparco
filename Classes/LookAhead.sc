@@ -13,7 +13,7 @@ LookAhead : Parser {
 	[classmethod.new]
 	description = "new creates a new LookAhead Parser"
 	[classmethod.new.args]
-	parsers = "a parser that needs to match the next text for LookAhead to succeed"
+	parser = "a parser that needs to match the next text for LookAhead to succeed"
 	[classmethod.new.returns]
 	what = "LookAhead"
 	*/
@@ -50,29 +50,29 @@ LookAhead : Parser {
 	/*
 	[examples]
 	what = '''
-    (
+	(
 	// note: you can much better make this parser without lookahead (see below); just a contrived example
 	var exclLetter = RegexParser("[!a-zA-Z]+"); // must include "!" because LookAhead won't consume the !
 	var quesLetter = RegexParser("[?a-zA-Z]+"); // must include "?" because LookAhead won't consume the ?
-    var c = Many(
-        Choice([
-            SequenceOf([
-                LookAhead(StrParser("!")),
-                exclLetter.map({|value| (\type: \exclamation, \value : value)})]).map({|result| result[1]}), // map removes the result of lookahead
-            SequenceOf([
-                LookAhead(StrParser("?")),
-                quesLetter.map({|value| (\type: \question, \value : value)})]).map({|result| result[1]}),
-    ])); // map removes the result of lookahead
-    var result = c.run("!hello?why!yay?ohnoes");
-    result.result.postcs;
-    )
+	var c = Many(
+		Choice([
+			SequenceOf([
+				LookAhead(StrParser("!")),
+				exclLetter.map({|value| (\type: \exclamation, \value : value)})]).map({|result| result[1]}), // map removes the result of lookahead
+			SequenceOf([
+				LookAhead(StrParser("?")),
+				quesLetter.map({|value| (\type: \question, \value : value)})]).map({|result| result[1]}),
+	])); // map removes the result of lookahead
+	var result = c.run("!hello?why!yay?ohnoes");
+	result.result.postcs;
+	)
 	(
 	// same thing without LookAhead
 	var exclLetter = RegexParser("[!][a-zA-Z]+");
 	var quesLetter = RegexParser("[?][a-zA-Z]+");
 	var c = Many(Choice([
-	            exclLetter.map({|value| (\type: \exclamation, \value : value)}),
-	            quesLetter.map({|value| (\type: \question, \value: value)})]));
+				exclLetter.map({|value| (\type: \exclamation, \value : value)}),
+				quesLetter.map({|value| (\type: \question, \value: value)})]));
 	var result = c.run("!hello?why!yay?ohnoes");
 	result.result.postcs;
 	)
