@@ -5,4 +5,6 @@ RegexParserTester.run;
 ChoiceTester.run;
 ManyTester.run;
 CombinatorTester.run;
+LongestChoiceTester.run;
+LookAheadTester.run;
 )

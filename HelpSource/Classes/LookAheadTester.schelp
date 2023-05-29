@@ -1,0 +1,16 @@
+TITLE:: LookAheadTester
+summary:: unit tests for LookAhead
+categories:: Parsing Tools
+related:: Classes/LookAhead
+
+DESCRIPTION::
+unit tests for LookAhead
+
+
+
+
+EXAMPLES::
+
+code::
+(FIXME add some example code)
+::
