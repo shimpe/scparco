@@ -173,7 +173,7 @@ ParserFactory {
 	what = '''Parser that parses multiple whitespace characters [\t\r\n\f]'''
 	*/
 	*makeWs {
-		^RegexParser("\\s*");
+		^Optional(RegexParser("\\s+"));
 	}
 
 	/*
