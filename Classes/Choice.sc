@@ -3,7 +3,7 @@
 title = "Choice"
 summary = "a specialized Parser that can match one of multiple possibilities"
 categories = "Parsing Tools"
-related = "Classes/Parser"
+related = "Classes/Parser, Classes/LongestChoice"
 description = '''
 Choice is a Parser that matches one of multiple subparsers. Parsers are tried in the order they are supplied,
 and matching stops when the first one succeeded.
