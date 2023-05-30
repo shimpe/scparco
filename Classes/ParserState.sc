@@ -10,15 +10,15 @@ ParserState uses the internal state of a parser. It has methods to update that s
 */
 ParserState {
 	/*
-	[method.targetString]
-	description='''the string to be parsed'''
-	[method.targetString.returns]
-	what = "a string"
+	[method.target]
+	description='''the string to be parsed (text parsers) or an Int8Array (binary parsers)'''
+	[method.target.returns]
+	what = "a string or an Int8Array"
 	*/
-	var <>targetString;
+	var <>target;
 	/*
 	[method.index]
-	description='''the position in the string where we are during parsing'''
+	description='''the position in the string/stream where we are during parsing'''
 	[method.index.returns]
 	what = "an integer"
 	*/
@@ -53,7 +53,7 @@ ParserState {
 	[classmethod.new]
 	description = "creates a new ParserState"
 	[classmethod.new.args]
-	targetString = "string that is being parsed"
+	target = "string/Int8Array that is being parsed"
 	index = "current position in the string as parsing is proceeding"
 	result = "result of parsing the string, will be a string by default, but can be transformed by specifying a map on the parser"
 	isError = "boolean to indicate if parsing failed"
@@ -62,14 +62,14 @@ ParserState {
 	what = "a new ParserState"
 	*/
 	*new {
-		| targetString = "", index=0, result=nil, isError=false, errorMsg="" |
-		^super.new.init(targetString, index, result, isError, errorMsg);
+		| target, index=0, result=nil, isError=false, errorMsg="" |
+		^super.new.init(target, index, result, isError, errorMsg);
 	}
 	/*
 	[method.init]
 	description = "initializes a new ParserState"
 	[method.init.args]
-	targetString = "string that is being parsed"
+	target = "string/Int8Array that is being parsed"
 	index = "current position in the string as parsing is proceeding"
 	result = "result of parsing the string, will be a string by default, but can be transformed by specifying a map on the parser"
 	isError = "boolean to indicate if parsing failed"
@@ -78,8 +78,8 @@ ParserState {
 	what = "an initialized ParserState"
 	*/
 	init {
-		| targetString, index, result, isError, errorMsg |
-		this.targetString = targetString;
+		| target, index, result, isError, errorMsg |
+		this.target = target;
 		this.index = index;
 		this.result = result;
 		this.isError = isError;
@@ -97,7 +97,7 @@ ParserState {
 			"*************".postln;
 			"*ParserState*".postln;
 			"*************".postln;
-			("targetString: " + this.targetString).postln;
+			("target: " + this.target).postln;
 			("index: " + this.index).postln;
 			("result: " + this.result).postln;
 			"*************".postln;
@@ -115,7 +115,7 @@ ParserState {
 	*/
 	updateState {
 		| newindex, newresult |
-		^ParserState(this.targetString, newindex, newresult, this.isError, this.errorMsg);
+		^ParserState(this.target, newindex, newresult, this.isError, this.errorMsg);
 	}
 
 	/*
@@ -130,7 +130,7 @@ ParserState {
 	*/
 	updateResult {
 		| newresult |
-		^ParserState(this.targetString, this.index, newresult, false, this.errorMsg);
+		^ParserState(this.target, this.index, newresult, false, this.errorMsg);
 	}
 
 	/*
@@ -144,6 +144,6 @@ ParserState {
 	*/
 	updateError {
 		| errorMsg |
-		^ParserState(this.targetString, this.index, this.result, true, errorMsg);
+		^ParserState(this.target, this.index, this.result, true, errorMsg);
 	}
 }

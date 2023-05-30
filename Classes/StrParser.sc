@@ -43,7 +43,7 @@ StrParser : Parser {
 				parserStateIn;
 			} {
 				currentIndex = parserStateIn.index;
-				currentTargetString = parserStateIn.targetString.drop(currentIndex);
+				currentTargetString = parserStateIn.target.drop(currentIndex);
 				if (currentTargetString.size == 0) {
 					outputState = parserStateIn.updateError(
 						"strParser: Error! Expected to match '" ++ str ++ "' but found an unexpected end of input!");

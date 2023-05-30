@@ -51,16 +51,16 @@ Parser {
 
 	/*
 	[method.run]
-	description = "runs the Parser on a piece of text and produces a ParserState. The ParserState contains the parse result or error information. Running the parser happens by calling its parserStateTransformer function on an initial state constructed from the targetString."
+	description = "runs the Parser on a piece of text and produces a ParserState. The ParserState contains the parse result or error information. Running the parser happens by calling its parserStateTransformer function on an initial state constructed from the target."
 	[method.run.args]
-	targetString = "text to be parsed"
+	target = "text/Int8Array to be parsed"
 	[method.run.returns]
 	what = "ParserState"
 	*/
 	run {
-		| targetString |
+		| target |
 		var initialState = ParserState(
-			targetString: targetString,
+			target: target,
 			index: 0,
 			result: nil,
 			isError: false,
@@ -145,7 +145,7 @@ Parser {
 	description ='''
 	errorMap takes a Parser and produces a new Parser with a modified error message. This allows you to contextualize the  error messages (e.g. warn about a "missing house number" instead of a generic "failed to parse integer".)
 	[method.errorMap.args]
-	fn = "user supplied function that receives generic error msg and index in the targetString at the moment parsing goes wrong, and returns a new error msg"
+	fn = "user supplied function that receives generic error msg and index in the target at the moment parsing goes wrong, and returns a new error msg"
 	[method.errorMap.returns]
 	what = "Parser"
 	'''
