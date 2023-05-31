@@ -1,7 +1,34 @@
 # scparco
 
 <img src="https://github.com/shimpe/scparco/blob/main/image/logo.png?raw=true" width="250" height="250"/>
-GPLv3 Library of parser combinators for supercollider. Here's a non-trivial example for parsing and evaluating a mathematical expresssion.
+GPLv3 Library of parser combinators for supercollider. It can be used with text (modeled as a string) or binary data (contained in an Int8Array).
+
+Example of parsing binary data from a sysex message:
+
+<pre><code>
+(
+var t = Int8Array[0xF7, 0x00, 0x01, 0x41, 0xF0]; // contrived example containing only manufacturer's id
+var startOfSysex = ParserFactory.makeBinaryLiteralInt8ArrayParser(Int8Array[0xF7]);
+var manufacturerId = ParserFactory.makeBinaryUIntParser(8).chain({
+		| result |
+		// using chain we can influence the next parser:
+		// if the first byte is 0x00, two more bytes will follow with the manufacturer id
+		// otherwise, the byte value itself is already the manufacturer's id
+		if (result == 0) {
+			// extract extended ID and tag it as \manufacturerId in the parse result
+			ParserFactory.makeBinaryUIntParser(16).map(MapFactory.tag(\manufacturerId));
+		} {
+			// current byte value is already the ID; tag it as \manufacturerId in the parse result
+			SucceedParser(result).map(MapFactory.tag(\manufacturerId));
+		}
+});
+var sysexParser = SequenceOf([startOfSysex, manufacturerId]).map({|result| result[1] }); // keep only manufacturer's id
+var result = sysexParser.run(t);
+this.assertEquals(result.result[\manufacturerId], 0x0141);
+)
+</pre></code>
+
+A non-trivial example for parsing and evaluating a mathematical expresssion from text:
 
 <pre><code>
 (
