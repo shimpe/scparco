@@ -24,7 +24,7 @@ var manufacturerId = ParserFactory.makeBinaryUIntParser(8).chain({
 });
 var sysexParser = SequenceOf([startOfSysex, manufacturerId]).map({|result| result[1] }); // keep only manufacturer's id
 var result = sysexParser.run(t);
-this.assertEquals(result.result[\manufacturerId], 0x0141);
+result.result.postcs;
 )
 </pre></code>
 
