@@ -1,0 +1,42 @@
+TITLE:: MapFactory
+summary:: a factory for commonly used map functions
+categories:: Parser Tools
+related:: Classes/Parser
+
+DESCRIPTION::
+MapFactory is a util that can create commonly used map functions.
+
+
+
+CLASSMETHODS::
+
+METHOD:: new
+creates a new MapFactory
+
+returns:: a new MapFactory
+METHOD:: tag
+creates a map function that wraps a parse result in an event with keys (\tagname : parseresult)
+
+ARGUMENT:: tagname
+tagname (will be transformed to a symbol)
+
+returns:: a function that, when called with a parse result, wrapsit in an event with keys (\tagname: parseresult) (see example code)
+
+INSTANCEMETHODS::
+
+METHOD:: init
+initializes the parser factory (but in reality it does nothing :))
+
+returns:: MapFactory
+
+EXAMPLES::
+
+code::
+	(
+	var stream = Int8Array[0xF0];
+	var binparser = ParserFactory.makeBinaryUIntParser(8).map(MapFactory.tag(\startOfSysex));
+	var result = binparser.run(stream);
+	result.result.postcs;
+	)
+	
+::

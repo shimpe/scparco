@@ -97,6 +97,34 @@ ARGUMENT:: separatorParser
 a Parser that matches whatever separates the values we are interested in
 
 returns:: a function that expects a ValueParser as argument and produces a Parser that matches one or more separated values
+METHOD:: makeBinaryUIntParser
+generates a parser that extracts an n-bit unsigned integer from a binary message(contained in an Int8Array).
+
+ARGUMENT:: no_of_bits
+an integer in the interval [1,32]
+
+returns:: a Parser that extracts an n-bit unsigned integer from a binary message (contained in an Int8Array)
+METHOD:: makeBinaryIntParser
+generates a parser that extracts an n-bit signed integer from a binary message(contained in an Int8Array).
+
+ARGUMENT:: no_of_bits
+an integer in the interval [1,32]
+
+returns:: a Parser that extracts an n-bit signed integer from a binary message (contained in an Int8Array)
+METHOD:: makeBinaryRawStringParser
+generates a parser that matches a literal string (e.g. a magic marker) in a binary message(contained in an Int8Array).
+
+ARGUMENT:: s
+string to match
+
+returns:: a Parser that extracts matches a literal string in a binary message (contained in an Int8Array)
+METHOD:: makeBinaryLiteralInt8ArrayParser
+generates a parser that matches a literal Int8Array (e.g. a magic marker) in a binary message(contained in an Int8Array).
+
+ARGUMENT:: a
+array to match
+
+returns:: a Parser that extracts matches a literal Int8Array in a binary message (contained in an Int8Array)
 METHOD:: forwardRef
 forwardRef is used in recursive parsers, since without forward reference it's impossible to use parsers that have not been defined yet leading to a chicken-and-egg problem (in a recursive parser, parser A refers to parser B, but parser B refers to parser A again).
 
@@ -196,5 +224,29 @@ code::
 	var result = arrayparser.run("[1,[2,3,[4,5],6],7,[8],9]"); // expected result: [ 1, [ 2, 3, [ 4, 5 ], 6 ], 7, [ 8 ], 9 ]
 	result.result.postcs;
 	)
+	(
+	var t = Int8Array[0xF7, 0x00, 0x00, 0x41, 0xF0];
+	var pl = [ParserFactory.makeBinaryLiteralInt8ArrayParser(Int8Array[0xF7])].addAll(BinaryBit() ! 8);
+	var p2 = [ParserFactory.makeBinaryLiteralInt8ArrayParser(Int8Array[0xF7])].add(ParserFactory.makeBinaryIntParser(8));
+	var sysexParser = SequenceOf([
+	ParserFactory.makeBinaryLiteralInt8ArrayParser(Int8Array[0xF7])].add(
+	ParserFactory.makeBinaryIntParser(8).chain({
+	    | result |
+	    // using chain we can influence the next parser:
+	    // if the first byte is 0x00, two more bytes will follow with the manufacturer id
+	    // otherwise, the byte value itself is already the manufacturer's id
+	    if (result == 0) {
+	        // extract extended ID and tag it as \manufacturerId in the parse result
+	        ParserFactory.makeBinaryUIntParser(16).map(MapFactory.tag(\manufacturerId));
+	    } {
+	        // current ID is already extracted; tag it as \manufacturerId in the parse result
+	        SucceedParser(result).map(MapFactory.tag(\manufacturerId));
+	    }
+	}))).map({|result| result[1]});
+	var result;
+	result = SequenceOf(sysexParser).run(t);
+	result.result.postcs;
+	)
+
 	
 ::

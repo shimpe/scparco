@@ -1,0 +1,37 @@
+TITLE:: BinaryOne
+summary:: a specialized Parser that can match a single binary 1 from a binary stream (contained in an Int8Array).
+categories:: Parsing Tools
+related:: Classes/Parser
+
+DESCRIPTION::
+BinaryOne is a Parser that matches a single 1 bit in a binary stream (contained in an Int8Array). Building block for binary stream parsers.
+
+
+
+CLASSMETHODS::
+
+METHOD:: new
+new creates a new BinaryOne Parser
+
+returns:: BinaryOne
+
+INSTANCEMETHODS::
+
+METHOD:: init
+init initializes the BinaryOne parser with a suitable parserStateTransformer function that consumes a bit and advances the parser index
+
+ARGUMENT:: parsers
+a list of parsers
+
+returns:: BinaryOne
+
+EXAMPLES::
+
+code::
+	(
+	var p1 = Many(BinaryOne());
+	var r1 = p1.run(Int8Array[2r11101010]);
+	r1.prettyprint; // expect [1, 1, 1]
+	)
+	
+::

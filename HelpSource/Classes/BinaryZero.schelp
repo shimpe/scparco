@@ -1,0 +1,37 @@
+TITLE:: BinaryZero
+summary:: a specialized Parser that can match a single binary 0 from a binary stream (contained in an Int8Array).
+categories:: Parsing Tools
+related:: Classes/Parser
+
+DESCRIPTION::
+BinaryZero is a Parser that matches a single 0 bit in a binary stream (contained in an Int8Array). Building block for binary stream parsers.
+
+
+
+CLASSMETHODS::
+
+METHOD:: new
+new creates a new BinaryZero Parser
+
+returns:: BinaryZero
+
+INSTANCEMETHODS::
+
+METHOD:: init
+init initializes the BinaryZero parser with a suitable parserStateTransformer function that consumes a bit and advances the parser index
+
+ARGUMENT:: parsers
+a list of parsers
+
+returns:: BinaryZero
+
+EXAMPLES::
+
+code::
+	(
+	var p1 = Many(BinaryZero());
+	var r1 = p1.run(Int8Array[2r00011101]);
+	r1.prettyprint; // expect [0, 0, 0]
+	)
+	
+::

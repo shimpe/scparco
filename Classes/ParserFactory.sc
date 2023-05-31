@@ -293,6 +293,110 @@ ParserFactory {
 	}
 
 	/*
+	[classmethod.makeBinaryUIntParser]
+	description = "generates a parser that extracts an n-bit unsigned integer from a binary message(contained in an Int8Array)."
+	[classmethod.makeBinaryUIntParser.args]
+	no_of_bits = "an integer in the interval [1,32]"
+	[classmethod.makeBinaryUIntParser.returns]
+	what = "a Parser that extracts an n-bit unsigned integer from a binary message (contained in an Int8Array)"
+	*/
+	*makeBinaryUIntParser {
+		| no_of_bits |
+		if ((no_of_bits < 1) || (no_of_bits > 32))
+		{
+			"Error! makeBinaryUIntParser argument n must be 1 <= n <= 32".postln;
+		} {
+			^SequenceOf(BinaryBit() ! no_of_bits).map({
+				|bits|
+				(bits.collect({ | bit, idx | (bit << (no_of_bits - 1 - idx) ) })).sum;
+			})
+		};
+	}
+
+	/*
+	[classmethod.makeBinaryIntParser]
+	description = "generates a parser that extracts an n-bit signed integer from a binary message(contained in an Int8Array)."
+	[classmethod.makeBinaryIntParser.args]
+	no_of_bits = "an integer in the interval [1,32]"
+	[classmethod.makeBinaryIntParser.returns]
+	what = "a Parser that extracts an n-bit signed integer from a binary message (contained in an Int8Array)"
+	*/
+	*makeBinaryIntParser {
+		| no_of_bits |
+		if ((no_of_bits < 1) || (no_of_bits > 32))
+		{
+			"Error! makeBinaryIntParser argument n must be 1 <= n <= 32".postln;
+		} {
+			^SequenceOf(BinaryBit() ! no_of_bits).map({
+				|bits|
+				if (bits[0] == 0) {
+					// sign bit is 0 -> treat same as uint
+					(bits.collect({ | bit, idx | (bit << (no_of_bits - 1 - idx) ) })).sum;
+				} {
+					// sign bit is 1
+					((bits.collect({ | bit, idx | (bit << (no_of_bits - 1 - idx) ) })).sum + 1).neg;
+				};
+			});
+		};
+	}
+
+	/*
+	[classmethod.makeBinaryRawStringParser]
+	description = "generates a parser that matches a literal string (e.g. a magic marker) in a binary message(contained in an Int8Array)."
+	[classmethod.makeBinaryRawStringParser.args]
+	s = "string to match"
+	[classmethod.makeBinaryRawStringParser.returns]
+	what = "a Parser that extracts matches a literal string in a binary message (contained in an Int8Array)"
+	*/
+	*makeBinaryRawStringParser {
+		| s |
+		if (s.size < 1) {
+			"Error! makeBinaryRawStringParser expects a string argument with at least one character.".postln;
+		} {
+			var byteParsers = s.ascii.collect({
+				|c|
+				ParserFactory.makeBinaryUIntParser(8).chain({
+					| result |
+					if (result == c) {
+						SucceedParser(result);
+					} {
+						FailParser("BinaryRawStringParser: Expected character "+ c.asAscii + "but got" + result.asAscii + "instead");
+					};
+				});
+			});
+			^SequenceOf(byteParsers);
+		};
+	}
+
+	/*
+	[classmethod.makeBinaryLiteralInt8ArrayParser]
+	description = "generates a parser that matches a literal Int8Array (e.g. a magic marker) in a binary message(contained in an Int8Array)."
+	[classmethod.makeBinaryLiteralInt8ArrayParser.args]
+	a = "array to match"
+	[classmethod.makeBinaryLiteralInt8ArrayParser.returns]
+	what = "a Parser that extracts matches a literal Int8Array in a binary message (contained in an Int8Array)"
+	*/
+	*makeBinaryLiteralInt8ArrayParser {
+		| a |
+		if (a.size < 1) {
+			"Error! makeBinaryLiteralInt8ArrayParser expects an Int8Array argument with at least one byte value.".postln;
+		} {
+			var byteParsers = a.collect({
+				|c|
+				ParserFactory.makeBinaryUIntParser(8).chain({
+					| result |
+					if (result == c.wrap(0,255)) { // .wrap(0,255) converts from signed to unsigned byte value
+						SucceedParser(result);
+					} {
+						FailParser("BinaryRawLiteralInt8ArrayParser: Expected byte value "+ a.asHexString + "but got" + result.asHexString + "instead");
+					};
+				});
+			});
+			^SequenceOf(byteParsers);
+		}
+	}
+
+	/*
 	[classmethod.forwardRef]
 	description = "forwardRef is used in recursive parsers, since without forward reference it's impossible to use parsers that have not been defined yet leading to a chicken-and-egg problem (in a recursive parser, parser A refers to parser B, but parser B refers to parser A again)."
 	[classmethod.forwardRef.args]
@@ -398,6 +502,30 @@ ParserFactory {
 	var result = arrayparser.run("[1,[2,3,[4,5],6],7,[8],9]"); // expected result: [ 1, [ 2, 3, [ 4, 5 ], 6 ], 7, [ 8 ], 9 ]
 	result.result.postcs;
 	)
+	(
+	var t = Int8Array[0xF7, 0x00, 0x00, 0x41, 0xF0];
+	var pl = [ParserFactory.makeBinaryLiteralInt8ArrayParser(Int8Array[0xF7])].addAll(BinaryBit() ! 8);
+	var p2 = [ParserFactory.makeBinaryLiteralInt8ArrayParser(Int8Array[0xF7])].add(ParserFactory.makeBinaryIntParser(8));
+	var sysexParser = SequenceOf([
+	ParserFactory.makeBinaryLiteralInt8ArrayParser(Int8Array[0xF7])].add(
+	ParserFactory.makeBinaryIntParser(8).chain({
+	    | result |
+	    // using chain we can influence the next parser:
+	    // if the first byte is 0x00, two more bytes will follow with the manufacturer id
+	    // otherwise, the byte value itself is already the manufacturer's id
+	    if (result == 0) {
+	        // extract extended ID and tag it as \manufacturerId in the parse result
+	        ParserFactory.makeBinaryUIntParser(16).map(MapFactory.tag(\manufacturerId));
+	    } {
+	        // current ID is already extracted; tag it as \manufacturerId in the parse result
+	        SucceedParser(result).map(MapFactory.tag(\manufacturerId));
+	    }
+	}))).map({|result| result[1]});
+	var result;
+	result = SequenceOf(sysexParser).run(t);
+	result.result.postcs;
+	)
+
 	'''
 	*/
 

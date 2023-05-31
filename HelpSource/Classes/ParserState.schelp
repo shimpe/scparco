@@ -13,8 +13,8 @@ CLASSMETHODS::
 METHOD:: new
 creates a new ParserState
 
-ARGUMENT:: targetString
-string that is being parsed
+ARGUMENT:: target
+string/Int8Array that is being parsed
 
 ARGUMENT:: index
 current position in the string as parsing is proceeding
@@ -32,12 +32,12 @@ returns:: a new ParserState
 
 INSTANCEMETHODS::
 
-METHOD:: targetString
-the string to be parsed
+METHOD:: target
+the string to be parsed (text parsers) or an Int8Array (binary parsers)
 
-returns:: a string
+returns:: a string or an Int8Array
 METHOD:: index
-the position in the string where we are during parsing
+the position in the string/stream where we are during parsing
 
 returns:: an integer
 METHOD:: result
@@ -58,8 +58,8 @@ returns:: a string
 METHOD:: init
 initializes a new ParserState
 
-ARGUMENT:: targetString
-string that is being parsed
+ARGUMENT:: target
+string/Int8Array that is being parsed
 
 ARGUMENT:: index
 current position in the string as parsing is proceeding

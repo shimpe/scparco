@@ -7,6 +7,8 @@ related = "Classes/Parser"
 description = '''
 SequenceOf takes a list of Parsers, and tries to match them one by one (in the order in which they were supplied). All Parsers in a SequenceOf parser must succeed for the SequenceOf to succeed.
 
+The parse result of a SequenceOf is a list of parse results of each of the parsers that have run.
+
 Note: an easy mistake to make (and with sometimes puzzling consequences) is to forget that the parsers to be supplied to SequenceOf must be in a list.
 '''
 */
@@ -55,7 +57,6 @@ SequenceOf : Parser {
 				});
 				if (keepGoing) {
 					outputState = nextState.updateResult(results);
-
 				} {
 					outputState = parserStateIn.updateError("Couldn't match sequence at index" + nextState.index);
 				};
