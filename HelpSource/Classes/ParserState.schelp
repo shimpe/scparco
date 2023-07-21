@@ -79,6 +79,11 @@ prints a readable representation of the ParserState to the post window; in case 
 
 returns:: this instance of ParserState
 
+METHOD:: print
+prints the contents of the ParserState to the post window
+
+returns:: this instance of ParserState
+
 METHOD:: updateState
 creates a completely new ParserState out of the current one with a new result and updated index
 

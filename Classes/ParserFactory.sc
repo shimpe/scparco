@@ -224,8 +224,8 @@ ParserFactory {
 						} {
 							var separatorState;
 							results = results.add(thingWeWantState.result);
-						nextState = thingWeWantState;
-						separatorState = separatorParser.parserStateTransformer.(nextState);
+							nextState = thingWeWantState;
+							separatorState = separatorParser.parserStateTransformer.(nextState);
 							if (separatorState.isError) {
 								keepTrying = false;
 							} {

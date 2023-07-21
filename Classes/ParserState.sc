@@ -105,6 +105,21 @@ ParserState {
 	}
 
 	/*
+	[method.print]
+	description = "prints the contents of the ParserState to the post window"
+	*/
+	print {
+		"*************".postln;
+		"*ParserState*".postln;
+		"*************".postln;
+		("target: " + this.target).postln;
+		("index: " + this.index).postln;
+		("result: " + this.result).postln;
+		("isError: " + this.result).postln;
+		("errorMsg: " + this.errorMsg).postln;
+	}
+
+	/*
 	[method.updateState]
 	description = "creates a completely new ParserState out of the current one with a new result and updated index"
 	[method.updateState.args]
