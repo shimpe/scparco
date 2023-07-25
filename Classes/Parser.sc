@@ -54,17 +54,20 @@ Parser {
 	description = "runs the Parser on a piece of text and produces a ParserState. The ParserState contains the parse result or error information. Running the parser happens by calling its parserStateTransformer function on an initial state constructed from the target."
 	[method.run.args]
 	target = "text/Int8Array to be parsed"
+	trace = "boolean to indicate if the parser should log a trace (for debugging)"
 	[method.run.returns]
 	what = "ParserState"
 	*/
 	run {
-		| target |
+		| target, trace=false |
 		var initialState = ParserState(
 			target: target,
 			index: 0,
 			result: nil,
 			isError: false,
-			errorMsg: "");
+			errorMsg: "",
+			trace: trace
+		);
 		^this.parserStateTransformer.(initialState);
 	}
 
@@ -163,5 +166,23 @@ Parser {
 			}
 		};
 		^newP;
+	}
+
+	logStartTrace {
+		| state, name |
+		if (state.trace == true) {
+			(name + "starts. Index =" + state.index).postln;
+		};
+	}
+
+	logEndTrace {
+		| state, name, success |
+		if (state.trace) {
+			if (success) {
+				(name + "succeeded.").postln;
+			} {
+				(name + "failed.").postln;
+			}
+		};
 	}
 }

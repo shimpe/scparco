@@ -42,15 +42,18 @@ StrParser : Parser {
 			if (parserStateIn.isError == True) {
 				parserStateIn;
 			} {
+				this.logStartTrace(parserStateIn, "StrParser(\""++str++"\")");
 				currentIndex = parserStateIn.index;
 				currentTargetString = parserStateIn.target.drop(currentIndex);
 				if (currentTargetString.size == 0) {
 					outputState = parserStateIn.updateError(
-						"strParser: Error! Expected to match '" ++ str ++ "' but found an unexpected end of input!");
+						"StrParser: Error! Expected to match '" ++ str ++ "' but found an unexpected end of input!");
 				} {
 					if (currentTargetString.beginsWith(str)) {
+						this.logEndTrace(parserStateIn, "StrParser(\""++str++"\")", true);
 						outputState = parserStateIn.updateState(currentIndex + str.size, str);
 					} {
+						this.logEndTrace(parserStateIn, "StrParser(\""++str++"\")", false);
 						outputState = parserStateIn.updateError("strParser: Error! at position" +
 							currentIndex + "expected to match '" ++ str ++ "' but found '" ++
 							currentTargetString.keep(str.size) ++ "[...]'");

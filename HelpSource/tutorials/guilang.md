@@ -2,7 +2,7 @@
 
 ## Before you start
 
-If you didn't go through the panola tutorial yet, please do that first and then come back here. It is much more gentle paced and goes over all concepts and techniques gradually. The current document is more of a fast run-through, skipping on many details.
+If you didn't go through the panola tutorial yet, please do that first and then come back here. It is much more gentle paced and goes over all concepts and techniques gradually. The current document is more of a fast run-through, skipping on many details and concentrating on how I built up the grammar required to solve the problem at hand.
 
 ## What is guilang?
 
@@ -46,6 +46,12 @@ l5 : (string: label5)
 ## Parsing the guilang specification
 
 In scparco, parsers for big specifications are built by combining together many smaller parsers for small parts of the specification. The parser for guilang will be built bottom-up. 
+
+### General debugging tip: tracing parsers
+
+As you start to make more complicated parsers, you may run into situations where things don't work as expected.
+In that case, you can always call the parser's ```run``` method with argument ```trace:true```. This causes the parsers
+to log to the post window when and where they start, and whether they succeed/fail.
 
 ### Parsing the specs section
 

@@ -38,10 +38,14 @@ Optional : Parser {
 				parserStateIn;
 			} {
 				var nextState = parserStateIn.deepCopy();
+				this.logStartTrace(parserStateIn, "Optional");
 				nextState = parser.parserStateTransformer.(nextState);
 				if (nextState.isError)
 				{
+					this.logEndTrace(parserStateIn, "Optional", false);
 					nextState = nextState.updateResult(nil);
+				} {
+					this.logEndTrace(parserStateIn, "Optional", true);
 				};
 				nextState;
 			};

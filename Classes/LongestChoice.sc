@@ -44,6 +44,7 @@ LongestChoice : Parser {
 			} {
 				var bestNextState = parserStateIn;
 				var oneSucceeded = false;
+				this.logStartTrace(parserStateIn, "LongestChoice");
 				parsers.do({
 					| parser, idx |
 					var testState = parser.parserStateTransformer.(parserStateIn);
@@ -57,7 +58,10 @@ LongestChoice : Parser {
 					};
 				});
 				if (oneSucceeded.not) {
+					this.logEndTrace(parserStateIn, "LongestChoice", false);
 					bestNextState = bestNextState.updateError("LongestChoice: unable to match with any parser at index" + parserStateIn.index);
+				} {
+					this.logEndTrace(parserStateIn, "LongestChoice", true);
 				};
 				bestNextState;
 			};

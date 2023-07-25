@@ -39,8 +39,12 @@ LookAhead : Parser {
 			} {
 				var nextState = parserStateIn.deepCopy(); // do not alter original parser state
 				var testState = parser.parserStateTransformer.(nextState);
+				this.logStartTrace(parserStateIn, "LookAhead");
 				if (testState.isError) {
+					this.logEndTrace(parserStateIn, "LookAhead", false);
 					nextState.updateError("failed to match LookAhead at index" + nextState.index);
+				}{
+					this.logEndTrace(parserStateIn, "LookAhead", true);
 				};
 				nextState;
 			};

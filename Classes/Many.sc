@@ -43,13 +43,16 @@ Many : Parser {
 			} {
 				var done = false;
 				var nextState = parserStateIn;
+				this.logStartTrace(parserStateIn, "Many");
 				while ({done.not}) {
 					var testState = parser.parserStateTransformer.(nextState);
 					if (testState.isError.not)
 					{
+						this.logEndTrace(parserStateIn, "Many", true);
 						results = results.add(testState.result);
 						nextState = testState;
 					} {
+						this.logEndTrace(parserStateIn, "Many", true);
 						done = true;
 					};
 				};

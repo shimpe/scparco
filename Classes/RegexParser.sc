@@ -41,23 +41,27 @@ RegexParser : Parser {
 			if (parserStateIn.isError == True) {
 				parserStateIn;
 			} {
+				this.logStartTrace(parserStateIn, "RegexParser(\"" ++ regex ++ "\")");
+
 				currentIndex = parserStateIn.index;
 				currentTarget = parserStateIn.target.drop(currentIndex);
 				if (currentTarget.size == 0) {
+					this.logEndTrace(parserStateIn, "RegexParser(\"" ++ regex ++ "\")", false);
 					outputState = parserStateIn.updateError(
 						"regexParser: Error! Expected to match '" ++ regex ++ "' but found an unexpected end of input!");
 				} {
 					if (currentTarget.findRegexpAt(regex, 0).notNil) {
 						var res = currentTarget.findRegexpAt(regex, 0);
 						var match = res[0];
+						this.logEndTrace(parserStateIn, "RegexParser(\"" ++ regex ++ "\")", true);
 						outputState = parserStateIn.updateState(currentIndex + match.size, match);
 					} {
+						this.logEndTrace(parserStateIn, "RegexParser(\"" ++ regex ++ "\")", false);
 						outputState = parserStateIn.updateError("regexParser: Error! at position" +
 							currentIndex + "expected to match '" ++ regex ++ "' but found '" ++
 							currentTarget.keep(regex.size.max(10)) ++ "[...]'");
 					};
 				};
-				//outputState.prettyprint;
 				outputState;
 			}
 		};

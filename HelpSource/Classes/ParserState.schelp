@@ -55,6 +55,10 @@ METHOD:: errorMsg
 a string to give some explanation about what went wrong
 
 returns:: a string
+METHOD:: trace
+a boolean to indicate if the parsers log themselves for debugging purposes
+
+returns:: a boolean
 METHOD:: init
 initializes a new ParserState
 

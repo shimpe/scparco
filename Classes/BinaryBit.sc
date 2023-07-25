@@ -36,12 +36,15 @@ BinaryBit : Parser {
 			} {
 				var byteOffset = (parserStateIn.index.div(8)).asInteger;
 				var nextState = parserStateIn;
+				this.logStartTrace(parserStateIn, "BinaryBit");
 				if (byteOffset >= (parserStateIn.target.size)) {
+					this.logEndTrace(parserStateIn, "BinaryBit", false);
 					nextState = parserStateIn.updateError("BinaryBit: unexpected end of input");
 				} {
 					var byte = parserStateIn.target[byteOffset];
 					var bitoffset = parserStateIn.index.mod(8);
 					var result = byte.asBinaryDigits[bitoffset];
+					this.logEndTrace(parserStateIn, "BinaryBit", true);
 					nextState = parserStateIn.updateState(parserStateIn.index + 1, result);
 				};
 				nextState;

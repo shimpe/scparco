@@ -44,6 +44,7 @@ Choice : Parser {
 				parserStateIn;
 			} {
 				var keepTrying = true;
+				this.logStartTrace(parserStateIn, "Choice");
 				parsers.do({
 					| parser, idx |
 					if (keepTrying) {
@@ -55,7 +56,10 @@ Choice : Parser {
 					};
 				});
 				if (nextState.isError) {
+					this.logEndTrace(parserStateIn, "Choice", false);
 					nextState = nextState.updateError("Choice: unable to match with any parser at index" + parserStateIn.index);
+				} {
+					this.logEndTrace(parserStateIn, "Choice", true);
 				};
 				nextState;
 			};

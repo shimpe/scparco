@@ -42,6 +42,9 @@ runs the Parser on a piece of text and produces a ParserState. The ParserState c
 ARGUMENT:: target
 text/Int8Array to be parsed
 
+ARGUMENT:: trace
+boolean to indicate if the parser should log a trace (for debugging)
+
 returns:: ParserState
 METHOD:: map
 	map takes a Parser an produces a new Parser that manipulates its parsing result according to the wishes of the user.

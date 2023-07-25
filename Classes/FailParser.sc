@@ -35,7 +35,9 @@ FailParser : Parser {
 
 		this.parserStateTransformer = {
 			| parserStateIn |
+			this.logStartTrace(parserStateIn, "FailParser");
 			parserStateIn.updateError(errorMsg);
+			this.logEndTrace(parserStateIn, "FailParser", false);
 		};
 	}
 

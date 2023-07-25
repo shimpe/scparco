@@ -43,6 +43,7 @@ ManyOne : Parser {
 			} {
 				var done = false;
 				var nextState = parserStateIn;
+				this.logStartTrace(parserStateIn, "ManyOne");
 				while ({done.not}) {
 					nextState = parser.parserStateTransformer.(nextState);
 					if (nextState.isError.not)
@@ -54,8 +55,10 @@ ManyOne : Parser {
 				};
 
 				if (results.size == 0) {
+					this.logEndTrace(parserStateIn, "ManyOne", false);
 					outputState = nextState.updateError("ManyOne: unable to match any parser at index" + nextState.index);
 				} {
+					this.logEndTrace(parserStateIn, "ManyOne", true);
 					outputState = nextState.updateResult(results);
 				};
 				outputState;

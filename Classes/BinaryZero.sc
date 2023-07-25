@@ -35,15 +35,19 @@ BinaryZero : Parser {
 			} {
 				var byteOffset = (parserStateIn.index.div(8)).asInteger;
 				var nextState = parserStateIn;
+				this.logStartTrace(parserStateIn, "BinaryZero");
 				if (byteOffset >= (parserStateIn.target.size)) {
+					this.logEndTrace(parserStateIn, "BinaryZero", false);
 					nextState = parserStateIn.updateError("BinaryZero: unexpected end of input");
 				} {
 					var byte = parserStateIn.target[byteOffset];
 					var bitoffset = parserStateIn.index.mod(8);
 					var result = byte.asBinaryDigits[bitoffset];
 					if (result != 0) {
+						this.logEndTrace(parserStateIn, "BinaryZero", false);
 						nextState = parserStateIn.updateError("BinaryZero: expected a 0 but got a 1 at index" + parserStateIn.index);
 					}{
+						this.logEndTrace(parserStateIn, "BinaryZero", true);
 						nextState = parserStateIn.updateState(parserStateIn.index + 1, result);
 					}
 				};

@@ -43,6 +43,7 @@ SequenceOf : Parser {
 				var results = [];
 				var keepGoing = true;
 				var nextState = parserStateIn;
+				this.logStartTrace(parserStateIn, "SequenceOf");
 				parsers.do({
 					| parser, idx |
 					if (keepGoing) {
@@ -56,8 +57,10 @@ SequenceOf : Parser {
 					}
 				});
 				if (keepGoing) {
+					this.logEndTrace(parserStateIn, "SequenceOf", true);
 					outputState = nextState.updateResult(results);
 				} {
+					this.logEndTrace(parserStateIn, "SequenceOf", false);
 					outputState = parserStateIn.updateError("Couldn't match sequence at index" + nextState.index);
 				};
 				outputState;

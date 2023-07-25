@@ -61,7 +61,7 @@ var noteParser = RegexParser("[a-gA-G]");
 )
 ```
 
-### Calling run
+### Running a parser
 
 Whenever you want to try a parser on a piece of text, you can use its ```run``` method. A call to ```run``` with the text you want to parse as an argument returns a so-called *parser state*. The parser state contains information about how successful the parsing was (i.e. did an error occur?), as well as information that informs subsequent parsers about where in the given string they can try to continue.
 
@@ -135,6 +135,25 @@ result:  nil
 isError:  nil
 errorMsg:  regexParser: Error! at position 0 expected to match '[a-gA-G]' but found 'h#[...]'
 ```
+
+## Tracing a parser
+
+If your parser fails in unexpected ways, consider calling "run" with the trace argument set to ```true```. This will cause every parser to log when it starts and whether it succeeds or fails.
+
+```
+(
+var ps;
+var noteparser = RegexParser("[a-gA-G]");
+noteparser.run("h#", true);
+)
+```
+Gives:
+```text
+RegexParser("[a-gA-G]") starts. Index = 0
+RegexParser("[a-gA-G]") failed.
+```
+
+In this trivial example, the output does not teach us a lot, but for more complicated parsers this can help you find out where parsing goes wrong.
 
 ## Mapping the parsing result
 

@@ -50,6 +50,14 @@ ParserState {
     var <>errorMsg;
 
 	/*
+	[method.trace]
+	description='''a boolean to indicate if the parsers log themselves for debugging purposes'''
+	[method.trace.returns]
+	what = "a boolean"
+	*/
+	var <>trace;
+
+	/*
 	[classmethod.new]
 	description = "creates a new ParserState"
 	[classmethod.new.args]
@@ -62,8 +70,8 @@ ParserState {
 	what = "a new ParserState"
 	*/
 	*new {
-		| target, index=0, result=nil, isError=false, errorMsg="" |
-		^super.new.init(target, index, result, isError, errorMsg);
+		| target, index=0, result=nil, isError=false, errorMsg="", trace=false |
+		^super.new.init(target, index, result, isError, errorMsg, trace);
 	}
 	/*
 	[method.init]
@@ -78,12 +86,13 @@ ParserState {
 	what = "an initialized ParserState"
 	*/
 	init {
-		| target, index, result, isError, errorMsg |
+		| target, index, result, isError, errorMsg, trace |
 		this.target = target;
 		this.index = index;
 		this.result = result;
 		this.isError = isError;
 		this.errorMsg = errorMsg;
+		this.trace = trace;
 	}
 
 	/*
@@ -117,6 +126,7 @@ ParserState {
 		("result: " + this.result).postln;
 		("isError: " + this.result).postln;
 		("errorMsg: " + this.errorMsg).postln;
+		("trace: " + this.trace).postln;
 	}
 
 	/*
@@ -130,7 +140,7 @@ ParserState {
 	*/
 	updateState {
 		| newindex, newresult |
-		^ParserState(this.target, newindex, newresult, this.isError, this.errorMsg);
+		^ParserState(this.target, newindex, newresult, this.isError, this.errorMsg, this.trace);
 	}
 
 	/*
@@ -145,7 +155,7 @@ ParserState {
 	*/
 	updateResult {
 		| newresult |
-		^ParserState(this.target, this.index, newresult, false, this.errorMsg);
+		^ParserState(this.target, this.index, newresult, false, this.errorMsg, this.trace);
 	}
 
 	/*
@@ -159,6 +169,6 @@ ParserState {
 	*/
 	updateError {
 		| errorMsg |
-		^ParserState(this.target, this.index, this.result, true, errorMsg);
+		^ParserState(this.target, this.index, this.result, true, errorMsg, this.trace);
 	}
 }
