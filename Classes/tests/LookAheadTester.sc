@@ -35,6 +35,21 @@ LookAheadTester : UnitTest {
 		);
 	}
 
+	test_negative_lookahead {
+		var str = "Blah!Blah";
+		var p1 = SequenceOf([StrParser("Blah"), NegativeLookAhead(StrParser("!")), StrParser("!Blah")]);
+		var p2 = SequenceOf([StrParser("Blah"), StrParser("!Blah")]);
+		var state1, state2;
+
+		state1 = p1.run("Blah!Blah");
+		this.assertEquals(state1.isError, true, "state1_isError");
+
+		state2 = p2.run("Blah!Blah");
+		this.assertEquals(state2.isError, false, "state2_isError");
+		this.assert(state2.result[0].compare("Blah") == 0, "state2_result0");
+		this.assert(state2.result[1].compare("!Blah") == 0, "state2_result1");
+	}
+
 	init {
     }
 }
