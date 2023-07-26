@@ -197,6 +197,16 @@ ParserFactory {
 	}
 
 	/*
+	[classmethod.makeNewlineParser]
+	description = "class to match a newline independent of platform"
+	[classmethod.makeNewlineParser.returns]
+	what = '''Parser that parses a newline'''
+	*/
+	*makeNewlineParser {
+		^Choice([StrParser("\r\n"), StrParser("\n"), StrParser("\r")]);
+	}
+
+	/*
 	[classmethod.makeSepBy]
 	description = "generates a function that expects a ValueParser and produces a parser that matches zero or more separated values (see example code)."
 	[classmethod.makeSepBy.args]
