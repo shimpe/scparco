@@ -35,9 +35,11 @@ SucceedParser : Parser {
 
 		this.parserStateTransformer = {
 			| parserStateIn |
+			var newState;
 			this.logStartTrace(parserStateIn, "SucceedParser");
-			parserStateIn.updateResult(thing);
+			newState = parserStateIn.updateResult(thing);
 			this.logEndTrace(parserStateIn, "SucceedParser", true);
+			newState;
 		};
 	}
 
