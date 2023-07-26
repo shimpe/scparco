@@ -83,6 +83,10 @@ METHOD:: makeIdentifierParser
 class to match an identifier as used in many programming languages
 
 returns:: Parser that parses an identifier
+METHOD:: makeNewlineParser
+class to match a newline independent of platform
+
+returns:: Parser that parses a newline
 METHOD:: makeSepBy
 generates a function that expects a ValueParser and produces a parser that matches zero or more separated values (see example code).
 
