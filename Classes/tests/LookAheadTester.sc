@@ -38,7 +38,7 @@ LookAheadTester : UnitTest {
 	test_negative_lookahead {
 		var str = "Blah!Blah";
 		var p1 = SequenceOf([StrParser("Blah"), NegativeLookAhead(StrParser("!")), StrParser("!Blah")]);
-		var p2 = SequenceOf([StrParser("Blah"), StrParser("!Blah")]);
+		var p2 = SequenceOf([StrParser("Blah"), NegativeLookAhead(StrParser("?")),StrParser("!Blah")]);
 		var state1, state2;
 
 		state1 = p1.run("Blah!Blah");
