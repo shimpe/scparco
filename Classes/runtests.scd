@@ -1,4 +1,5 @@
 (
+UnitTest.passVerbosity = UnitTest.brief;
 StrParserTester.run;
 SequenceOfTester.run;
 RegexParserTester.run;

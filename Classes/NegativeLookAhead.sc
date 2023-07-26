@@ -46,7 +46,6 @@ NegativeLookAhead : Parser {
 				}{
 					nextState = nextState.updateError("NegativeLookAhead parser matched (so: failure) at index" + nextState.index);
 					this.logEndTrace(nextState, "NegativeLookAhead parser matched (so: failure)", false);
-					nextState.print;
 				};
 				nextState;
 			};
