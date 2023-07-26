@@ -124,7 +124,7 @@ ParserState {
 		("target: " + this.target).postln;
 		("index: " + this.index).postln;
 		("result: " + this.result).postln;
-		("isError: " + this.result).postln;
+		("isError: " + this.isError).postln;
 		("errorMsg: " + this.errorMsg).postln;
 		("trace: " + this.trace).postln;
 	}
