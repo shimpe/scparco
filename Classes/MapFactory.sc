@@ -34,11 +34,24 @@ MapFactory {
 	[classmethod.tag.args]
 	tagname = "tagname (will be transformed to a symbol)"
 	[classmethod.tag.returns]
-	what = '''a function that, when called with a parse result, wrapsit in an event with keys (\tagname: parseresult) (see example code)'''
+	what = '''a function that, when called with a parse result, wraps it in an event with keys (\tagname: parseresult) (see example code)'''
 	*/
 	*tag {
 		| tagname |
 		^{|result| (tagname.asSymbol : result)}
+	}
+
+	/*
+	[classmethod.log]
+	description = '''creates a map function doesn't modify the result, but logs a message to the post window = debugging tool'''
+	[classmethod.msg.args]
+	tagname = "msg (will be printed to post window)"
+	[classmethod.msg.returns]
+	what = '''a function that, when called with a parse result, returns that same result after printing something to the post window'''
+	*/
+	*log {
+		| msg |
+		^{ |result| msg.postln; result }
 	}
 
 	/*

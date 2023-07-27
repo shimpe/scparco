@@ -31,10 +31,18 @@ METHOD:: makeIntegerParser
 class to parse an integer number and convert it from string to Integer
 
 returns:: Parser that can parse a (signed) integer number
+METHOD:: makePositiveIntegerParser
+class to parse an unsigned integer number and convert it from string to Integer
+
+returns:: Parser that can parse an (usigned) integer number
 METHOD:: makeFloatParser
 class to parse a float number and convert it from string to Float
 
 returns:: Parser that can parse a (signed) float number
+METHOD:: makePositiveFloatParser
+class to parse a positive float number and convert it from string to Float
+
+returns:: Parser that can parse an (unsigned) float number
 METHOD:: makeEmailParser
 class to parse an email address
 

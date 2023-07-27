@@ -144,6 +144,37 @@ Parser {
 	}
 
 	/*
+	[method.log]
+	description = '''
+	log a message when the parser is finished
+	'''
+	[method.log.args]
+	msg = "user supplied string that will be logged to the post window (debugging tool)"
+	[method.log.returns]
+	what = "Parser"
+	*/
+	log {
+		| msg, include_result=false |
+		var newP = Parser();
+		newP.parserStateTransformer = {
+			| parserState |
+			var nextState = this.parserStateTransformer.(parserState);
+			msg.postln;
+			if (nextState.isError) {
+				"(Error)".postln;
+				nextState;
+			} {
+				if (include_result) {
+					nextState.result.postcs;
+				};
+				"(Ok)".postln;
+				nextState.updateResult(nextState.result);
+			}
+		};
+		^newP;
+	}
+
+	/*
 	[method.errorMap]
 	description ='''
 	errorMap takes a Parser and produces a new Parser with a modified error message. This allows you to contextualize the  error messages (e.g. warn about a "missing house number" instead of a generic "failed to parse integer".)
@@ -171,7 +202,7 @@ Parser {
 	logStartTrace {
 		| state, name |
 		if (state.trace == true) {
-			(name + "starts. Index =" + state.index).postln;
+			(name + "starts. Index =" + state.index + "Context: [..]" ++ state.target.drop(state.index).keep(10) ++ "[...]" ).postln;
 		};
 	}
 

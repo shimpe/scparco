@@ -81,6 +81,14 @@ ARGUMENT:: fn
 user supplied function that takes parse result so far and returns a new Parser based on that result
 
 returns:: Parser
+METHOD:: log
+	log a message when the parser is finished
+	
+
+ARGUMENT:: msg
+user supplied string that will be logged to the post window (debugging tool)
+
+returns:: Parser
 METHOD:: errorMap
 	errorMap takes a Parser and produces a new Parser with a modified error message. This allows you to contextualize the  error messages (e.g. warn about a "missing house number" instead of a generic "failed to parse integer".)
 	[method.errorMap.args]

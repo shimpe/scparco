@@ -67,6 +67,17 @@ ParserFactory {
 	}
 
 	/*
+	[classmethod.makePositiveIntegerParser]
+	description = "class to parse an unsigned integer number and convert it from string to Integer"
+	[classmethod.makePositiveIntegerParser.returns]
+	what = "Parser that can parse an (usigned) integer number"
+	*/
+	*makePositiveIntegerParser {
+		^RegexParser("[+]?[0-9]+").map({|txt| txt.asInteger });
+	}
+
+
+	/*
 	[classmethod.makeFloatParser]
 	description = "class to parse a float number and convert it from string to Float"
 	[classmethod.makeFloatParser.returns]
@@ -74,6 +85,17 @@ ParserFactory {
 	*/
 	*makeFloatParser {
 		^RegexParser("[+-]?([0-9]*[.])?[0-9]+").map({|txt| txt.asFloat });
+	}
+
+
+	/*
+	[classmethod.makePositiveFloatParser]
+	description = "class to parse a positive float number and convert it from string to Float"
+	[classmethod.makePositiveFloatParser.returns]
+	what = "Parser that can parse an (unsigned) float number"
+	*/
+	*makePositiveFloatParser {
+		^RegexParser("[+]?([0-9]*[.])?[0-9]+").map({|txt| txt.asFloat });
 	}
 
 	/*

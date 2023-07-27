@@ -20,7 +20,19 @@ creates a map function that wraps a parse result in an event with keys (\tagname
 ARGUMENT:: tagname
 tagname (will be transformed to a symbol)
 
-returns:: a function that, when called with a parse result, wrapsit in an event with keys (\tagname: parseresult) (see example code)
+returns:: a function that, when called with a parse result, wraps it in an event with keys (\tagname: parseresult) (see example code)
+METHOD:: log
+creates a map function doesn't modify the result, but logs a message to the post window = debugging tool
+
+returns:: the class MapFactory itself
+
+METHOD:: msg
+(FIXME class method has no description yet)
+
+ARGUMENT:: tagname
+msg (will be printed to post window)
+
+returns:: a function that, when called with a parse result, returns that same result after printing something to the post window
 
 INSTANCEMETHODS::
 
