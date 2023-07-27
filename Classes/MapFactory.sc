@@ -44,9 +44,9 @@ MapFactory {
 	/*
 	[classmethod.log]
 	description = '''creates a map function doesn't modify the result, but logs a message to the post window = debugging tool'''
-	[classmethod.msg.args]
-	tagname = "msg (will be printed to post window)"
-	[classmethod.msg.returns]
+	[classmethod.log.args]
+	msg = "msg (will be printed to post window)"
+	[classmethod.log.returns]
 	what = '''a function that, when called with a parse result, returns that same result after printing something to the post window'''
 	*/
 	*log {

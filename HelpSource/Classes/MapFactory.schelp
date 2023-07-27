@@ -24,12 +24,7 @@ returns:: a function that, when called with a parse result, wraps it in an event
 METHOD:: log
 creates a map function doesn't modify the result, but logs a message to the post window = debugging tool
 
-returns:: the class MapFactory itself
-
-METHOD:: msg
-(FIXME class method has no description yet)
-
-ARGUMENT:: tagname
+ARGUMENT:: msg
 msg (will be printed to post window)
 
 returns:: a function that, when called with a parse result, returns that same result after printing something to the post window
