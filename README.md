@@ -5,7 +5,7 @@ GPLv3 Library of parser combinators for supercollider. It can be used with text 
 
 Example of parsing binary data from a sysex message:
 
-<pre><code>
+```smalltalk
 (
 var t = Int8Array[0xF7, 0x00, 0x01, 0x41, 0xF0]; // contrived example containing only manufacturer's id
 var startOfSysex = ParserFactory.makeBinaryLiteralInt8ArrayParser(Int8Array[0xF7]);
@@ -26,11 +26,11 @@ var sysexParser = SequenceOf([startOfSysex, manufacturerId]).map({|result| resul
 var result = sysexParser.run(t);
 result.result.postcs;
 )
-</pre></code>
+```
 
 A non-trivial example for parsing and evaluating a mathematical expresssion from text:
 
-<pre><code>
+```smalltalk
 (
 // simple calculator
 // first the parser
@@ -94,4 +94,4 @@ var program = "(+ (* 10 2) (-       (/50 3) 2))";
 var result = interpreter.(program);
 result.debug("result of the calculation");
 )
-</code></pre>
+```
