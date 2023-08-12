@@ -84,7 +84,7 @@ The above code gives the following result:
 result 1 is error?: false
 result 1: a
 *************
-*ParserState*
+*ScpParserState*
 *************
 target:  a#
 index:  1
@@ -127,7 +127,7 @@ gives
 
 ```text
 *************
-*ParserState*
+*ScpParserState*
 *************
 target:  h#
 index:  0

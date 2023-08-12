@@ -1,7 +1,7 @@
 TITLE:: ScpParser
 summary:: a base class for Parsers
 categories:: Parsing Tools
-related:: Classes/ParserState, Classes/ScpStrParser, Classes/ScpRegexParser, Classes/ScpChoice, Classes/ScpSequenceOf, Classes/ScpMany, Classes/ScpManyOne, Classes/ScpParserFactory
+related:: Classes/ScpParserState, Classes/ScpStrParser, Classes/ScpRegexParser, Classes/ScpChoice, Classes/ScpSequenceOf, Classes/ScpMany, Classes/ScpManyOne, Classes/ScpParserFactory
 
 DESCRIPTION::
 ScpParser is the base class for everything that performs parsing in this library.
@@ -27,17 +27,17 @@ returns:: ScpParser
 INSTANCEMETHODS::
 
 METHOD:: parserStateTransformer
-	a function that takes a ParserState and returns an updated ParserState
+	a function that takes a ScpParserState and returns an updated ScpParserState
 	this function forms the heart of every ScpParser
 	
 
-returns:: ParserState
+returns:: ScpParserState
 METHOD:: parserInit
 initializes a new ScpParser
 
 returns:: ScpParser
 METHOD:: run
-runs the ScpParser on a piece of text and produces a ParserState. The ParserState contains the parse result or error information. Running the parser happens by calling its parserStateTransformer function on an initial state constructed from the target.
+runs the ScpParser on a piece of text and produces a ScpParserState. The ScpParserState contains the parse result or error information. Running the parser happens by calling its parserStateTransformer function on an initial state constructed from the target.
 
 ARGUMENT:: target
 text/Int8Array to be parsed
@@ -45,7 +45,7 @@ text/Int8Array to be parsed
 ARGUMENT:: trace
 boolean to indicate if the parser should log a trace (for debugging)
 
-returns:: ParserState
+returns:: ScpParserState
 METHOD:: map
 	map takes a ScpParser an produces a new ScpParser that manipulates its parsing result according to the wishes of the user.
 

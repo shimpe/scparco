@@ -3,7 +3,7 @@
 title = "ScpParser"
 summary = "a base class for Parsers"
 categories = "Parsing Tools"
-related = "Classes/ParserState, Classes/ScpStrParser, Classes/ScpRegexParser, Classes/ScpChoice, Classes/ScpSequenceOf, Classes/ScpMany, Classes/ScpManyOne, Classes/ScpParserFactory"
+related = "Classes/ScpParserState, Classes/ScpStrParser, Classes/ScpRegexParser, Classes/ScpChoice, Classes/ScpSequenceOf, Classes/ScpMany, Classes/ScpManyOne, Classes/ScpParserFactory"
 description = '''
 ScpParser is the base class for everything that performs parsing in this library.
 Parsers for complex systems are made by combining together Parsers for smaller systems
@@ -21,11 +21,11 @@ ScpParser {
 	/*
 	[method.parserStateTransformer]
 	description = '''
-	a function that takes a ParserState and returns an updated ParserState
+	a function that takes a ScpParserState and returns an updated ScpParserState
 	this function forms the heart of every ScpParser
 	'''
 	[method.parserStateTransformer.returns]
-	what = "ParserState"
+	what = "ScpParserState"
 	*/
 	var <>parserStateTransformer;
 
@@ -51,16 +51,16 @@ ScpParser {
 
 	/*
 	[method.run]
-	description = "runs the ScpParser on a piece of text and produces a ParserState. The ParserState contains the parse result or error information. Running the parser happens by calling its parserStateTransformer function on an initial state constructed from the target."
+	description = "runs the ScpParser on a piece of text and produces a ScpParserState. The ScpParserState contains the parse result or error information. Running the parser happens by calling its parserStateTransformer function on an initial state constructed from the target."
 	[method.run.args]
 	target = "text/Int8Array to be parsed"
 	trace = "boolean to indicate if the parser should log a trace (for debugging)"
 	[method.run.returns]
-	what = "ParserState"
+	what = "ScpParserState"
 	*/
 	run {
 		| target, trace=false |
-		var initialState = ParserState(
+		var initialState = ScpParserState(
 			target: target,
 			index: 0,
 			result: nil,

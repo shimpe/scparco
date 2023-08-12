@@ -1,7 +1,7 @@
 /*
 [general]
 title = "ScpLookAhead"
-summary = "a specialized ScpParser that tries to match a ScpParser and succeeds if the matching succeeds. It does not advance the ParserState index."
+summary = "a specialized ScpParser that tries to match a ScpParser and succeeds if the matching succeeds. It does not advance the ScpParserState index."
 categories = "Parsing Tools"
 related = "Classes/ScpParser"
 description = '''

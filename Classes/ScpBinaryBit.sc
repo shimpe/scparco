@@ -6,7 +6,7 @@ categories = "Parsing Tools"
 related = "Classes/ScpParser"
 description = '''
 ScpBinaryBit is a ScpParser that a single Bit in a binary stream (contained in an Int8Array). Building block for binary stream parsers.
-These can be useful e.g to interpret headers of sound files, or to parse Sysex messages. Note that the ParserState.index here represents a bit offset and not a character offset as was the case in text parsers.
+These can be useful e.g to interpret headers of sound files, or to parse Sysex messages. Note that the ScpParserState.index here represents a bit offset and not a character offset as was the case in text parsers.
 '''
 */
 ScpBinaryBit : ScpParser {

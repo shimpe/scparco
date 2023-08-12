@@ -1,17 +1,17 @@
-TITLE:: ParserState
+TITLE:: ScpParserState
 summary:: holds the internal state of a parser
 categories:: ScpParser Tools
 related:: Classes/ScpParser
 
 DESCRIPTION::
-ParserState uses the internal state of a parser. It has methods to update that state and to pretty-print it.
+ScpParserState uses the internal state of a parser. It has methods to update that state and to pretty-print it.
 
 
 
 CLASSMETHODS::
 
 METHOD:: new
-creates a new ParserState
+creates a new ScpParserState
 
 ARGUMENT:: target
 string/Int8Array that is being parsed
@@ -28,7 +28,7 @@ boolean to indicate if parsing failed
 ARGUMENT:: errorMsg
 string with some explanation about what error occurred. Error msgs can be made contextual by specifying a n erorrMap on the parser
 
-returns:: a new ParserState
+returns:: a new ScpParserState
 
 INSTANCEMETHODS::
 
@@ -60,7 +60,7 @@ a boolean to indicate if the parsers log themselves for debugging purposes
 
 returns:: a boolean
 METHOD:: init
-initializes a new ParserState
+initializes a new ScpParserState
 
 ARGUMENT:: target
 string/Int8Array that is being parsed
@@ -77,19 +77,19 @@ boolean to indicate if parsing failed
 ARGUMENT:: errorMsg
 string with some explanation about what error occurred. Error msgs can be made contextual by specifying a n erorrMap on the parser
 
-returns:: an initialized ParserState
+returns:: an initialized ScpParserState
 METHOD:: prettyprint
-prints a readable representation of the ParserState to the post window; in case of errors it will just show the error msg
+prints a readable representation of the ScpParserState to the post window; in case of errors it will just show the error msg
 
-returns:: this instance of ParserState
+returns:: this instance of ScpParserState
 
 METHOD:: print
-prints the contents of the ParserState to the post window
+prints the contents of the ScpParserState to the post window
 
-returns:: this instance of ParserState
+returns:: this instance of ScpParserState
 
 METHOD:: updateState
-creates a completely new ParserState out of the current one with a new result and updated index
+creates a completely new ScpParserState out of the current one with a new result and updated index
 
 ARGUMENT:: newindex
 updated index
@@ -97,24 +97,24 @@ updated index
 ARGUMENT:: newresult
 updated result
 
-returns:: ParserState
+returns:: ScpParserState
 METHOD:: updateResult
-creates a completely new ParserState out of the current one with a new result
+creates a completely new ScpParserState out of the current one with a new result
 	updateResult will also reset isError to false since we assume having a result means that parsing succeeded
 	
 
 ARGUMENT:: newresult
 updated result
 
-returns:: ParserState
+returns:: ScpParserState
 METHOD:: updateError
-creates a completely new ParserState out of the current one to represents an error
+creates a completely new ScpParserState out of the current one to represents an error
 	
 
 ARGUMENT:: errorMsg
 error message to be shown to the user
 
-returns:: ParserState
+returns:: ScpParserState
 
 EXAMPLES::
 
