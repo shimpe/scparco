@@ -16,6 +16,8 @@ l2 : (string: label2)
 l3 : (string: label3)
 l4 : (string: label4)
 l5 : (string: label5)
+b1 : (string: 2 col button)
+b2 : (string: 2 col button)
 }
 """;
 var keyval = ScpSequenceOf([
