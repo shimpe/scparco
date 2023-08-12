@@ -1,0 +1,16 @@
+TITLE:: ScpLongestChoiceTester
+summary:: unit tests for ScpLongestChoice
+categories:: Parsing Tools
+related:: Classes/ScpLongestChoice, Classes/ScpChoice
+
+DESCRIPTION::
+unit tests for ScpLongestChoice
+
+
+
+
+EXAMPLES::
+
+code::
+(FIXME add some example code)
+::

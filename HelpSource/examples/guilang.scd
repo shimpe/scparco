@@ -18,73 +18,73 @@ l4 : (string: label4)
 l5 : (string: label5)
 }
 """;
-var keyval = SequenceOf([
-	RegexParser("[a-z][a-z0-9]*"),
-	ParserFactory.makeWs,
-	StrParser(":"),
-	ParserFactory.makeWs,
-	RegexParser("[^(,\))][^(,\))]*"), // everything except comma and closing bracket
-	ParserFactory.makeWs
+var keyval = ScpSequenceOf([
+	ScpRegexParser("[a-z][a-z0-9]*"),
+	ScpParserFactory.makeWs,
+	ScpStrParser(":"),
+	ScpParserFactory.makeWs,
+	ScpRegexParser("[^(,\))][^(,\))]*"), // everything except comma and closing bracket
+	ScpParserFactory.makeWs
 ]).map({|result| (\key : result[0], \value: result[4]) });
-var betweenCommas = ParserFactory.makeSepBy(SequenceOf([
-	StrParser(","),
-	ParserFactory.makeWs])).(keyval);
-var spec_contents = ParserFactory.makeBetween(
-	SequenceOf([StrParser("("), ParserFactory.makeWs]),
-	SequenceOf([StrParser(")"), ParserFactory.makeWs])).(betweenCommas);
-var spec = SequenceOf([
-	ParserFactory.makeIdentifierParser,
-	ParserFactory.makeWs,
-	StrParser(":"),
-	ParserFactory.makeWs,
+var betweenCommas = ScpParserFactory.makeSepBy(ScpSequenceOf([
+	ScpStrParser(","),
+	ScpParserFactory.makeWs])).(keyval);
+var spec_contents = ScpParserFactory.makeBetween(
+	ScpSequenceOf([ScpStrParser("("), ScpParserFactory.makeWs]),
+	ScpSequenceOf([ScpStrParser(")"), ScpParserFactory.makeWs])).(betweenCommas);
+var spec = ScpSequenceOf([
+	ScpParserFactory.makeIdentifierParser,
+	ScpParserFactory.makeWs,
+	ScpStrParser(":"),
+	ScpParserFactory.makeWs,
 	spec_contents,
-	ParserFactory.makeWs
+	ScpParserFactory.makeWs
 ]).map({ |result| (\element: result[0], \elementspecs: result[4]) });
-var spec_section = SequenceOf([
-	StrParser("specs"),
-	ParserFactory.makeWs,
-	StrParser("{"),
-	ParserFactory.makeWs,
-	Many(spec),
-	StrParser("}")
+var spec_section = ScpSequenceOf([
+	ScpStrParser("specs"),
+	ScpParserFactory.makeWs,
+	ScpStrParser("{"),
+	ScpParserFactory.makeWs,
+	ScpMany(spec),
+	ScpStrParser("}")
 ]).map({ |result| (\allspecs : result[4]) });
-var rowelement = SequenceOf([
-	ParserFactory.makeWs,
-	RegexParser("[A-Z][_a-zA-Z0-9]*"),
-	ParserFactory.makeWs,
-	StrParser(":"),
-	ParserFactory.makeWs,
-	ParserFactory.makeIdentifierParser,
-	ParserFactory.makeWs
+var rowelement = ScpSequenceOf([
+	ScpParserFactory.makeWs,
+	ScpRegexParser("[A-Z][_a-zA-Z0-9]*"),
+	ScpParserFactory.makeWs,
+	ScpStrParser(":"),
+	ScpParserFactory.makeWs,
+	ScpParserFactory.makeIdentifierParser,
+	ScpParserFactory.makeWs
 ]).map({ | result | (\uielement : result[1], \name : result[5]) });
-var row_contents = Choice([rowelement, ParserFactory.makeWsOne.map({ |result| nil })]);
-var separatedByPipes = SequenceOf([
+var row_contents = ScpChoice([rowelement, ScpParserFactory.makeWsOne.map({ |result| nil })]);
+var separatedByPipes = ScpSequenceOf([
 	row_contents,
-	ParserFactory.makeWs,
-	Many(SequenceOf([
-		Choice([
-			StrParser("||").map({|result| (\sep : \extendcol)}),
-			StrParser("|").map({|result| (\sep : \newcol)})]),
+	ScpParserFactory.makeWs,
+	ScpMany(ScpSequenceOf([
+		ScpChoice([
+			ScpStrParser("||").map({|result| (\sep : \extendcol)}),
+			ScpStrParser("|").map({|result| (\sep : \newcol)})]),
 	    row_contents,
-		ParserFactory.makeWs]).map({|result| [result[0], result[1]] }))
+		ScpParserFactory.makeWs]).map({|result| [result[0], result[1]] }))
 ]).map({|result| [result[0], result[2] ].flat; });
-var row = ParserFactory.makeBetween(
-	SequenceOf([StrParser("("), ParserFactory.makeWs]),
-	SequenceOf([StrParser(")"), ParserFactory.makeWs])).(separatedByPipes);
-var row_section = SequenceOf([
-	StrParser("rows"),
-	ParserFactory.makeWs,
-	StrParser("{"),
-	ParserFactory.makeWs,
-	Many(row),
-	ParserFactory.makeWs,
-	StrParser("}"),
-	ParserFactory.makeWs
+var row = ScpParserFactory.makeBetween(
+	ScpSequenceOf([ScpStrParser("("), ScpParserFactory.makeWs]),
+	ScpSequenceOf([ScpStrParser(")"), ScpParserFactory.makeWs])).(separatedByPipes);
+var row_section = ScpSequenceOf([
+	ScpStrParser("rows"),
+	ScpParserFactory.makeWs,
+	ScpStrParser("{"),
+	ScpParserFactory.makeWs,
+	ScpMany(row),
+	ScpParserFactory.makeWs,
+	ScpStrParser("}"),
+	ScpParserFactory.makeWs
 ]).map({ |result| (\allrows : result[4]) });
-var guilang = SequenceOf([
-	ParserFactory.makeWs,
+var guilang = ScpSequenceOf([
+	ScpParserFactory.makeWs,
 	row_section,
-	ParserFactory.makeWs,
+	ScpParserFactory.makeWs,
 	spec_section
 ]).map({ |result| (\rows : result[1][\allrows], \specs: result[3][\allspecs]) });
 

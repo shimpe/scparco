@@ -1,0 +1,16 @@
+TITLE:: ScpCombinatorTester
+summary:: unit tests using some ScpParserFactory methods
+categories:: Parsing Tools
+related:: Classes/ScpParserFactory
+
+DESCRIPTION::
+unit tests using some ScpParserFactory methods
+
+
+
+
+EXAMPLES::
+
+code::
+(FIXME add some example code)
+::

@@ -1,0 +1,16 @@
+TITLE:: ScpRegexParserTester
+summary:: unit tests for ScpRegexParser
+categories:: Parsing Tools
+related:: Classes/ScpRegexParser
+
+DESCRIPTION::
+unit tests for ScpRegexParser
+
+
+
+
+EXAMPLES::
+
+code::
+(FIXME add some example code)
+::

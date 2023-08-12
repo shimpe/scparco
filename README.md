@@ -8,21 +8,21 @@ Example of parsing binary data from a sysex message:
 ```smalltalk
 (
 var t = Int8Array[0xF7, 0x00, 0x01, 0x41, 0xF0]; // contrived example containing only manufacturer's id
-var startOfSysex = ParserFactory.makeBinaryLiteralInt8ArrayParser(Int8Array[0xF7]);
-var manufacturerId = ParserFactory.makeBinaryUIntParser(8).chain({
+var startOfSysex = ScpParserFactory.makeBinaryLiteralInt8ArrayParser(Int8Array[0xF7]);
+var manufacturerId = ScpParserFactory.makeBinaryUIntParser(8).chain({
 		| result |
 		// using chain we can influence the next parser:
 		// if the first byte is 0x00, two more bytes will follow with the manufacturer id
 		// otherwise, the byte value itself is already the manufacturer's id
 		if (result == 0) {
 			// extract extended ID and tag it as \manufacturerId in the parse result
-			ParserFactory.makeBinaryUIntParser(16).map(MapFactory.tag(\manufacturerId));
+			ScpParserFactory.makeBinaryUIntParser(16).map(ScpMapFactory.tag(\manufacturerId));
 		} {
 			// current byte value is already the ID; tag it as \manufacturerId in the parse result
-			SucceedParser(result).map(MapFactory.tag(\manufacturerId));
+			ScpSucceedParser(result).map(ScpMapFactory.tag(\manufacturerId));
 		}
 });
-var sysexParser = SequenceOf([startOfSysex, manufacturerId]).map({|result| result[1] }); // keep only manufacturer's id
+var sysexParser = ScpSequenceOf([startOfSysex, manufacturerId]).map({|result| result[1] }); // keep only manufacturer's id
 var result = sysexParser.run(t);
 result.result.postcs;
 )
@@ -34,20 +34,20 @@ A non-trivial example for parsing and evaluating a mathematical expresssion from
 (
 // simple calculator
 // first the parser
-var numberParser = ParserFactory.makeFloatParser.map({|x| (\type : \number, \value : x) });
-var operatorParser = Choice([StrParser("+"), StrParser("-"), StrParser("*"), StrParser("/")]);
-var betweenBrackets = ParserFactory.makeBetween(StrParser("("), StrParser(")"));
-var expression = ParserFactory.forwardRef(Thunk({
-	Choice([
+var numberParser = ScpParserFactory.makeFloatParser.map({|x| (\type : \number, \value : x) });
+var operatorParser = ScpChoice([ScpStrParser("+"), ScpStrParser("-"), ScpStrParser("*"), ScpStrParser("/")]);
+var betweenBrackets = ScpParserFactory.makeBetween(ScpStrParser("("), ScpStrParser(")"));
+var expression = ScpParserFactory.forwardRef(Thunk({
+	ScpChoice([
 		numberParser,
 		operationParser
 	])
 }));
-var operationParser = betweenBrackets.(SequenceOf([
+var operationParser = betweenBrackets.(ScpSequenceOf([
 	operatorParser,
-	ParserFactory.makeWs,
+	ScpParserFactory.makeWs,
 	expression,
-	ParserFactory.makeWs,
+	ScpParserFactory.makeWs,
 	expression
 ])).map({ |results| (\type: \operation, \value : (\op : results[0], \a : results[2], \b : results[4]) ) });
 

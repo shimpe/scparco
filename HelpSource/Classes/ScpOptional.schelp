@@ -1,0 +1,43 @@
+TITLE:: ScpOptional
+summary:: a specialized ScpParser that can match zero or one ScpParser
+categories:: Parsing Tools
+related:: Classes/ScpParser
+
+DESCRIPTION::
+ScpOptional is a ScpParser that matches zero or one ScpParser. If it fails, it returns a result of nil.
+
+
+
+CLASSMETHODS::
+
+METHOD:: new
+new creates a new ScpOptional ScpParser
+
+ARGUMENT:: parser
+a ScpParser
+
+returns:: ScpOptional
+
+INSTANCEMETHODS::
+
+METHOD:: init
+init initializes the ScpOptional parser with a suitable parserStateTransformer function that tries to match but succeeds even if the match fails. A failed ScpOptional returns a parse result of nil.
+
+ARGUMENT:: parser
+a ScpParser
+
+returns:: ScpOptional
+
+EXAMPLES::
+
+code::
+	(
+	var s1 = ScpStrParser("hello!");
+	var s2 = ScpOptional(ScpStrParser("bye!"));
+	var text = "hello!hello!";
+	var seq = ScpSequenceOf([s1,s2,s1]);
+	var result = seq.run(text); // [ "hello!", nil, "hello!" ]
+	result.result.postcs;
+	)
+	
+::

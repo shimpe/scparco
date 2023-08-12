@@ -1,0 +1,264 @@
+TITLE:: ScpParserFactory
+summary:: a factory for commonly used parsers, made from smaller library provided parsers
+categories:: ScpParser Tools
+related:: Classes/ScpParser
+
+DESCRIPTION::
+ScpParserFactory is a util that can create some parsers and families of parsers for common use cases. These parsers are built as combinations of more primitive library provided parsers. In some cases (e.g. html tag parser), you may want to build your own parser to make it easier to extract all information. ScpParserFactory only implements classmethods, meaning you can call them using the syntax ScpParserFactory.makeIntegerParser (i.e. there's no need to create a ScpParserFactory instance first).
+
+
+
+CLASSMETHODS::
+
+METHOD:: new
+creates a new ScpParserFactory
+
+returns:: a new ScpParserFactory
+METHOD:: makeBetween
+creates a parser factory that can extract something between two other parsers.
+	So, given a string and 3 parsers [LeftParser, ContentParser, RightParser], it will return only what is found by the ContentParser. Think of a value between brackets, where you are only interested in what is between the brackets (see example code).
+
+	The result of a call to makeBetween is not a complete parser yet. It is a function that expects the ContentParser as argument. This allows to prepare a "between parser", where the LeftParser and RightParser are specified when makeBetween is called, and the ContentParser is specified at the moment of finalizing the parser. To finalize the parser, call the function return by makeBetween with a ContentParser as argument.
+
+ARGUMENT:: leftParser
+a ScpParser that matches whatever should be left of the content you are interested in
+
+ARGUMENT:: rightParser
+a ScpParser that matches whatever should be right of the content you are interested in
+
+returns:: a function that, when called with a ContentParser as argument, will produce a new parser that matches first LeftParser, then ContentParser, then RightParser and keeps only the result of the ContentParser.
+METHOD:: makeIntegerParser
+class to parse an integer number and convert it from string to Integer
+
+returns:: ScpParser that can parse a (signed) integer number
+METHOD:: makePositiveIntegerParser
+class to parse an unsigned integer number and convert it from string to Integer
+
+returns:: ScpParser that can parse an (usigned) integer number
+METHOD:: makeFloatParser
+class to parse a float number and convert it from string to Float
+
+returns:: ScpParser that can parse a (signed) float number
+METHOD:: makePositiveFloatParser
+class to parse a positive float number and convert it from string to Float
+
+returns:: ScpParser that can parse an (unsigned) float number
+METHOD:: makeEmailParser
+class to parse an email address
+
+returns:: ScpParser that can parse an email address (some extremely exotic uses cases are excluded)
+METHOD:: makeUrlParser
+class to parse a URL
+
+returns:: ScpParser that can parse a URL
+METHOD:: makeLetters
+class to parse one or more letters
+
+returns:: ScpParser that can parse one or more letters
+METHOD:: makeDigits
+class to parse one or more digits
+
+returns:: ScpParser that can parse one or more digits
+METHOD:: makeAlphanumeric
+class to parse an alphanumeric value
+
+returns:: ScpParser that can parse an alphanumeric value
+METHOD:: makeIpAddressParser
+class to parse an IPv4/IPv6 address
+
+returns:: ScpParser that can parse an IPv4/IPv6 address
+METHOD:: makeYYYYMMddParser
+class to parse an YYY-MM-dd date (separator - . or /)
+
+returns:: ScpParser that can parse an an YYY-MM-dd date 
+METHOD:: makeddMMYYYYParser
+class to parse an dd-MM-YYYY parser (separators - . or /) 
+
+returns:: ScpParser that can parse an dd-MM-YYYY date
+METHOD:: makeHtmlTagParser
+class to match an html tag (with attributes). The tag with attributes is matched as a whole. No subparsers are present to find the individual attributes.
+
+returns:: ScpParser that can parse an html tag with attributes
+METHOD:: makeWs
+class to match zero or more whitespace characters
+
+returns:: ScpParser that parses multiple whitespace characters [\t\r\n\f]
+METHOD:: makeWsOne
+class to match one or more whitespace characters
+
+returns:: ScpParser that parses multiple whitespace characters [\t\r\n\f]
+METHOD:: makeIdentifierParser
+class to match an identifier as used in many programming languages
+
+returns:: ScpParser that parses an identifier
+METHOD:: makeNewlineParser
+class to match a newline independent of platform
+
+returns:: ScpParser that parses a newline
+METHOD:: makeSepBy
+generates a function that expects a ValueParser and produces a parser that matches zero or more separated values (see example code).
+
+ARGUMENT:: separatorParser
+a ScpParser that matches whatever separates the values we are interested in
+
+returns:: a function that expects a ValueParser as argument and produces a ScpParser that matches zero or more separated values
+METHOD:: makeSepByOne
+generates a function that expects a ValueParser and produces a parser that matches one or more separated values (see example code).
+
+ARGUMENT:: separatorParser
+a ScpParser that matches whatever separates the values we are interested in
+
+returns:: a function that expects a ValueParser as argument and produces a ScpParser that matches one or more separated values
+METHOD:: makeBinaryUIntParser
+generates a parser that extracts an n-bit unsigned integer from a binary message(contained in an Int8Array).
+
+ARGUMENT:: no_of_bits
+an integer in the interval [1,32]
+
+returns:: a ScpParser that extracts an n-bit unsigned integer from a binary message (contained in an Int8Array)
+METHOD:: makeBinaryIntParser
+generates a parser that extracts an n-bit signed integer from a binary message(contained in an Int8Array).
+
+ARGUMENT:: no_of_bits
+an integer in the interval [1,32]
+
+returns:: a ScpParser that extracts an n-bit signed integer from a binary message (contained in an Int8Array)
+METHOD:: makeBinaryRawStringParser
+generates a parser that matches a literal string (e.g. a magic marker) in a binary message(contained in an Int8Array).
+
+ARGUMENT:: s
+string to match
+
+returns:: a ScpParser that extracts matches a literal string in a binary message (contained in an Int8Array)
+METHOD:: makeBinaryLiteralInt8ArrayParser
+generates a parser that matches a literal Int8Array (e.g. a magic marker) in a binary message(contained in an Int8Array).
+
+ARGUMENT:: a
+array to match
+
+returns:: a ScpParser that extracts matches a literal Int8Array in a binary message (contained in an Int8Array)
+METHOD:: forwardRef
+forwardRef is used in recursive parsers, since without forward reference it's impossible to use parsers that have not been defined yet leading to a chicken-and-egg problem (in a recursive parser, parser A refers to parser B, but parser B refers to parser A again).
+
+ARGUMENT:: parserThunk
+a Thunk (= unevaluated function) that, when evaluated, will produce a parser. The Thunk can contain parsers that have not yet been defined in the code (see example code).
+
+returns:: a parser wrapper that will evaluate to an actual parser only when it is being used during parsing. At that moment in time, all parsers it refers to must have been instantiated and initialized. This allows for making parser A depend on parser B, where parser B depends on parser A (circular dependencies, which often occur when defining recursive parsers).
+
+INSTANCEMETHODS::
+
+METHOD:: init
+initializes the parser factory (but in reality it does nothing :))
+
+returns:: ScpParserFactory
+
+EXAMPLES::
+
+code::
+	(
+	var intp = ScpParserFactory.makeIntegerParser;
+	var result = intp.run("3.14"); // expected result: 3
+	result.result.postcs;
+	)
+	(
+	var floatp = ScpParserFactory.makeFloatParser;
+	var result = floatp.run("3.14"); // expected result: 3.14
+	result.result.postcs;
+	)
+	(
+	var emailp = ScpParserFactory.makeEmailParser;
+	var result = emailp.run("fubar.smalltalk@brainiac.co.uk");
+	result.result.postcs; // result: "fubar.smalltalk@brainiac.co.uk"
+	)
+	(
+	var urlp = ScpParserFactory.makeUrlParser;
+	var result = urlp.run("https://www.google.com/givemebreak?parameter=value&&parameter2=56");
+	result.result.postcs; // result: "https://www.google.com/givemebreak?parameter=value&&parameter2=56"
+	)
+	(
+	var ip = ScpParserFactory.makeIpAddressParser;
+	var result = ip.run("127.0.0.1");
+	var result2 = ip.run("2001:0db8:85a3:0000:0000:8a2e:0370:7334");
+	result.result.postcs;
+	result2.result.postcs;
+	)
+	(
+	var ymd = ScpParserFactory.makeYYYYMMddParser;
+	var result = ymd.run("2023-06-02");
+	result.result.postcs;
+	)
+	(
+	var dmy = ScpParserFactory.makeddMMYYYYParser;
+	var result = dmy.run("13/02/1975");
+	result.result.postcs;
+	)
+	(
+	var tag = ScpParserFactory.makeHtmlTagParser;
+	var result = tag.run("<element value=\"56\">");
+	result.result.postcs;
+	)
+	(
+	var betweenBrackets = ScpParserFactory.makeBetween(ScpStrParser("("), ScpStrParser(")"));
+	var lettersBetweenBrackets = betweenBrackets.(ScpRegexParser("[A-Za-z]+"));
+	var result = lettersBetweenBrackets.run("(foobarsnafu)"); // result should be "foobarsnafu"
+	result.result.postcs;
+	)
+	(
+	var commasep = ScpParserFactory.makeSepBy(ScpStrParser(","));
+	var csv_ints = commasep.(ScpParserFactory.makeIntegerParser);
+	var result = csv_ints.run("45,78,-93,12"); // result should be [45, 78, -93, 12]
+	result.result.postcs;
+    )
+    (
+	// both separators and values can be more complex parsers as well
+	var commacolonsep = ScpParserFactory.makeSepBy(ScpChoice([ScpStrParser(","), ScpStrParser(";")]));
+	var csv_numbers = commacolonsep.(ScpParserFactory.makeFloatParser);
+	var text = "45,-89.23;56.7,67;90.09";
+	var result = csv_numbers.run(text); // result should be [ 45.0, -89.23, 56.7, 67.0, 90.09 ]
+	result.result.postcs;
+    )
+	(
+	var betweenSquareBrackets = ScpParserFactory.makeBetween(ScpStrParser("["), ScpStrParser("]"));
+	var commaSeparated = ScpParserFactory.makeSepBy(ScpStrParser(","));
+	var digitparser = ScpParserFactory.makeIntegerParser;
+	var nested_array_parser = ScpParserFactory.forwardRef(Thunk({
+	// Thunk makes sure its inside is not evaluated yet
+	// and forwardRef "disguises" (wraps) the Thunk as a ScpParser
+	//
+	// We need a forward ref here to get around a mutual dependency problem
+	// namely: nested_array_element uses flat_arrayparser, but
+	// flat_arrayparser uses nested_array_element... (= mutually recursive definition).
+	ScpChoice([
+	    digitparser,
+		arrayparser])
+	}));
+	var arrayparser = betweenSquareBrackets.(commaSeparated.(nested_array_parser));
+	var result = arrayparser.run("[1,[2,3,[4,5],6],7,[8],9]"); // expected result: [ 1, [ 2, 3, [ 4, 5 ], 6 ], 7, [ 8 ], 9 ]
+	result.result.postcs;
+	)
+	(
+	var t = Int8Array[0xF7, 0x00, 0x00, 0x41, 0xF0];
+	var pl = [ScpParserFactory.makeBinaryLiteralInt8ArrayParser(Int8Array[0xF7])].addAll(ScpBinaryBit() ! 8);
+	var p2 = [ScpParserFactory.makeBinaryLiteralInt8ArrayParser(Int8Array[0xF7])].add(ScpParserFactory.makeBinaryIntParser(8));
+	var sysexParser = ScpSequenceOf([
+	ScpParserFactory.makeBinaryLiteralInt8ArrayParser(Int8Array[0xF7])].add(
+	ScpParserFactory.makeBinaryIntParser(8).chain({
+	    | result |
+	    // using chain we can influence the next parser:
+	    // if the first byte is 0x00, two more bytes will follow with the manufacturer id
+	    // otherwise, the byte value itself is already the manufacturer's id
+	    if (result == 0) {
+	        // extract extended ID and tag it as \manufacturerId in the parse result
+	        ScpParserFactory.makeBinaryUIntParser(16).map(ScpMapFactory.tag(\manufacturerId));
+	    } {
+	        // current ID is already extracted; tag it as \manufacturerId in the parse result
+	        ScpSucceedParser(result).map(ScpMapFactory.tag(\manufacturerId));
+	    }
+	}))).map({|result| result[1]});
+	var result;
+	result = ScpSequenceOf(sysexParser).run(t);
+	result.result.postcs;
+	)
+
+	
+::

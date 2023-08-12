@@ -1,0 +1,16 @@
+TITLE:: ScpSequenceOfTester
+summary:: unit tests for ScpSequenceOf
+categories:: Parsing Tools
+related:: Classes/ScpSequenceOf
+
+DESCRIPTION::
+unit tests for ScpSequenceOf
+
+
+
+
+EXAMPLES::
+
+code::
+(FIXME add some example code)
+::

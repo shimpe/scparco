@@ -1,0 +1,55 @@
+TITLE:: ScpMany
+summary:: a specialized ScpParser that matches zero or more repeated occurrences of another ScpParser
+categories:: Parsing Tools
+related:: Classes/ScpParser, Classes/ScpManyOne
+
+DESCRIPTION::
+ScpMany takes a ScpParser and produces a new ScpParser that matches zero or more of the given ScpParser.
+The parse result of a ScpMany parser is a list of parse results of the child parser.
+
+
+
+CLASSMETHODS::
+
+METHOD:: new
+creates a new ScpMany parser
+
+ARGUMENT:: parser
+a ScpParser of which zero or more need to be matched
+
+returns:: ScpMany
+
+INSTANCEMETHODS::
+
+METHOD:: init
+initializes a ScpMany parser
+
+ARGUMENT:: parser
+a ScpParser of which zero or more need to be matched. The parse result of a ScpMany parser is a list of parse results of the given ScpParser. This can be an empty list.
+
+returns:: ScpMany
+
+EXAMPLES::
+
+code::
+	(
+	var separator = ScpStrParser("|");
+	var floatp = ScpParserFactory.makeFloatParser;
+	var float_separated_by_separator = ScpSequenceOf(
+	    separator,
+	    ScpMany(ScpSequenceOf(
+	        floatp,
+	        separator)));
+	var result = ScpMany(ScpSequenceOf([floatp, separator])).run("3.1415|-89.23|0.12|"); // expected result [[3.1415, "|"], [ -89.23, "|"], [0.12, "|"]]
+	result.result.postcs;
+	)
+	
+	// maybe you are interested in the values only, then it's easier to use the SepBy family of parsers
+	(
+	var sepBy = ScpParserFactory.makeSepBy(ScpStrParser("|"));
+	var separated_floats_parser = sepBy.(ScpParserFactory.makeFloatParser);
+	var result = separated_floats_parser.run("3.1415|-89.23|0.12|"); // expected result: [3.1415, -89.23, 0.12]
+	result.result.postcs;
+	)
+	
+::

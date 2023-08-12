@@ -1,0 +1,16 @@
+TITLE:: ScpBinaryTests
+summary:: unit tests for binary parsing classes
+categories:: Parsing Tools
+related:: Classes/ScpParser
+
+DESCRIPTION::
+unit tests for binary parsers
+
+
+
+
+EXAMPLES::
+
+code::
+(FIXME add some example code)
+::

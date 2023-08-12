@@ -1,0 +1,44 @@
+TITLE:: ScpManyOne
+summary:: a specialized ScpParser that matches one or more repeated occurrences of another ScpParser
+categories:: Parsing Tools
+related:: Classes/ScpParser, Classes/ScpMany
+
+DESCRIPTION::
+ScpMany takes a ScpParser and produces a new ScpParser that matches one or more of the given ScpParser.
+The parse result of a ScpMany parser is a list of parse results of the child parser.
+
+
+
+CLASSMETHODS::
+
+METHOD:: new
+creates a new ScpManyOne parser
+
+ARGUMENT:: parser
+a ScpParser of which one or more need to be matched
+
+returns:: ScpManyOne
+
+INSTANCEMETHODS::
+
+METHOD:: init
+initializes a ScpManyOne parser
+
+ARGUMENT:: parser
+a ScpParser of which one or more need to be matched. The parse result of a succeeded ScpManyOne parser is a list of parse results of the given ScpParser. For a failed ScpManyOne parser it's nil.
+
+returns:: ScpManyOne
+
+EXAMPLES::
+
+code::
+	(
+	var between = ScpParserFactory.makeBetween(ScpStrParser("("), ScpStrParser(")"));
+	var intp = ScpParserFactory.makeIntegerParser;
+	var int_between_brackets = between.(intp);
+	var p = ScpManyOne(int_between_brackets);
+	var result = p.run("(2309)(4545)(3409)"); // expected result: [2309, 4545, 3409]
+	result.prettyprint;
+	)
+	
+::

@@ -57,7 +57,7 @@ The preferred way to parse a note name therefore is using a regular expression w
 
 ```smalltalk
 (
-var noteParser = RegexParser("[a-gA-G]");
+var noteParser = ScpRegexParser("[a-gA-G]");
 )
 ```
 
@@ -70,7 +70,7 @@ Try to run this parser on a valid note name:
 ```smalltalk
 (
 var ps; // ps is an abbreviation of parserState
-var noteparser = RegexParser("[a-gA-G]");
+var noteparser = ScpRegexParser("[a-gA-G]");
 ps = noteparser.run("a#");
 ps.isError.debug("result 1 is error?");
 ps.result.debug("result 1");
@@ -96,7 +96,7 @@ With a wrong note name, however, an error is signaled and the parser index remai
 ```smalltalk
 (
 var ps;
-var noteparser = RegexParser("[a-gA-G]");
+var noteparser = ScpRegexParser("[a-gA-G]");
 ps = noteparser.run("h#");
 ps.isError.debug("result 2 is error?");
 ps.result.debug("result 2");
@@ -117,7 +117,7 @@ Note that prettyprint will just show an error message in case of a parsing error
 ```smalltalk
 (
 var ps;
-var noteparser = RegexParser("[a-gA-G]");
+var noteparser = ScpRegexParser("[a-gA-G]");
 ps = noteparser.run("h#");
 ps.print;
 )
@@ -143,14 +143,14 @@ If your parser fails in unexpected ways, consider calling "run" with the trace a
 ```
 (
 var ps;
-var noteparser = RegexParser("[a-gA-G]");
+var noteparser = ScpRegexParser("[a-gA-G]");
 noteparser.run("h#", true);
 )
 ```
 Gives:
 ```text
-RegexParser("[a-gA-G]") starts. Index = 0
-RegexParser("[a-gA-G]") failed.
+ScpRegexParser("[a-gA-G]") starts. Index = 0
+ScpRegexParser("[a-gA-G]") failed.
 ```
 
 In this trivial example, the output does not teach us a lot, but for more complicated parsers this can help you find out where parsing goes wrong.
@@ -162,7 +162,7 @@ Our specification for note names allows both lowercase and uppercase characters,
 In the first version we had:
 ```smalltalk
 var ps;
-var noteparser = RegexParser("[a-gA-G]");
+var noteparser = ScpRegexParser("[a-gA-G]");
 ps = noteparser.run("A#");
 ps.result.debug("result");
 ```
@@ -173,7 +173,7 @@ result: A
 With a result mapper, we can transform the parse result and add some structure or record some contextual information:
 ```smalltalk
 (
-var noteparser = RegexParser("[aAbBcCdDeEfFgG]").map({|result| 
+var noteparser = ScpRegexParser("[aAbBcCdDeEfFgG]").map({|result| 
     (\type: \notename, \value: result.toLower) });
 var ps = noteparser.run("A#");
 ps.result.debug("result");
@@ -194,14 +194,14 @@ No music language can be complete without a specification of rests. In Panola a 
 So, for rests a separate RestParser is specified:
 ```smalltalk
 (
-var restParser = RegexParser("[rR]").map({|result| (\type: \rest) });
+var restParser = ScpRegexParser("[rR]").map({|result| (\type: \rest) });
 )
 ```
 Mapping again is used to add some extra information and structure into the parse result. We can try out if the rest parser works:
 
 ```smalltalk
 (
-var restParser = RegexParser("[rR]").map({|result| (\type: \rest) });
+var restParser = ScpRegexParser("[rR]").map({|result| (\type: \rest) });
 var ps = restParser.run("r");
 ps.result.debug("result");
 )
@@ -215,32 +215,32 @@ result: ( 'type': rest )
 
 A note name alone does not suffice to specify a pitch. Pitches can optionally be altered by decorating the note name with a sharp (#), a flat (-), a double sharp (x) or a double flat (--) Note: later also an octave specification will be needed, but in this section we concentrate on the alteration marks. 
 
-### Choice
+### ScpChoice
 
-Small parsers like the ones we made so far can be combined together into bigger parsers. In this case we will make a small sharp parser, a flat parser a double sharp parser and double flat parser. Then a ```Choice``` parser will be used which can try different alternatives until one succeeds. The ```Choice``` parser will be wrapped in an ```Optional``` parser, because not every note name is decorated with a alteration mark.
+Small parsers like the ones we made so far can be combined together into bigger parsers. In this case we will make a small sharp parser, a flat parser a double sharp parser and double flat parser. Then a ```ScpChoice``` parser will be used which can try different alternatives until one succeeds. The ```ScpChoice``` parser will be wrapped in an ```ScpOptional``` parser, because not every note name is decorated with a alteration mark.
 
 ### Pitfall...
 
-Here we encounter a subtle pitfall: if a pitch is decorated with a double flat ("--") then a parser for a single flat will succeed since it matches the first character of ("--"). Once the parser for a single flat has consumed the first "-" the double-flat parser will never succeed anymore since there's only one "-" left. The way we solve it here is to take into account the ordering in which different parsers will be tried. The ```Choice``` parser always tries out parsers from left to right, and stops trying as soon as one succeeds. So by making sure the double-flat parser runs before the flat parser, we can be sure not to mistake any double flats for a single flat followed by a minus sign.
+Here we encounter a subtle pitfall: if a pitch is decorated with a double flat ("--") then a parser for a single flat will succeed since it matches the first character of ("--"). Once the parser for a single flat has consumed the first "-" the double-flat parser will never succeed anymore since there's only one "-" left. The way we solve it here is to take into account the ordering in which different parsers will be tried. The ```ScpChoice``` parser always tries out parsers from left to right, and stops trying as soon as one succeeds. So by making sure the double-flat parser runs before the flat parser, we can be sure not to mistake any double flats for a single flat followed by a minus sign.
 
-Note that in some more complex cases it may be difficult to ensure the "correct" parser runs first. For such occasions, there's an alternative parser called ```LongestChoice``` which will try to match all the parsers and keep the one that consumes the most tokens. This is obviously less efficient that just using ```Choice```.
+Note that in some more complex cases it may be difficult to ensure the "correct" parser runs first. For such occasions, there's an alternative parser called ```ScpLongestChoice``` which will try to match all the parsers and keep the one that consumes the most tokens. This is obviously less efficient that just using ```ScpChoice```.
 
-### StrParser
+### ScpStrParser
 
-Note that instead of using a ```RegexParser``` to match an alteration mark, we here use a simpler ```StrParser```. ```StrParser``` can only do a literal matching of a string (case sensitive only at the time of writing this guide). It is prefered over ```RegexParser``` if applicable since it's less error prone than writing a regex, and a bit more efficient.
+Note that instead of using a ```ScpRegexParser``` to match an alteration mark, we here use a simpler ```ScpStrParser```. ```ScpStrParser``` can only do a literal matching of a string (case sensitive only at the time of writing this guide). It is prefered over ```ScpRegexParser``` if applicable since it's less error prone than writing a regex, and a bit more efficient.
 
 ```smalltalk
 (
-var noteModifier = Optional(Choice([
-    StrParser("--").map({|result| (\type : \notemodifier, \value: \doubleflat) }),
-    StrParser("-").map({|result| (\type: \notemodifier, \value: \flat) }),
-    StrParser("#").map({|result| (\type: \notemodifier, \value: \sharp) }),
-    StrParser("x").map({|result| (\type: \notemodifier, \value: \doublesharp) })
+var noteModifier = ScpOptional(ScpChoice([
+    ScpStrParser("--").map({|result| (\type : \notemodifier, \value: \doubleflat) }),
+    ScpStrParser("-").map({|result| (\type: \notemodifier, \value: \flat) }),
+    ScpStrParser("#").map({|result| (\type: \notemodifier, \value: \sharp) }),
+    ScpStrParser("x").map({|result| (\type: \notemodifier, \value: \doublesharp) })
 ])).map({|result| result ? (\type: \notemodifier, \value: \natural) }); 
 )
 ```
 
-The above code parses the optional alteration mark, and if the ```Optional``` turns up with an empty result (i.e. there's no alteration mark present) the map function makes sure to decorate the parse result with a \\natural note modifier. This ensures that every note will have a \\notemodifier property which I expect will make using the information in the parse result easier later on.
+The above code parses the optional alteration mark, and if the ```ScpOptional``` turns up with an empty result (i.e. there's no alteration mark present) the map function makes sure to decorate the parse result with a \\natural note modifier. This ensures that every note will have a \\notemodifier property which I expect will make using the information in the parse result easier later on.
 
 ## Parsing the octave
 
@@ -250,8 +250,8 @@ Code that uses this parse information later on to generate a supercollider patte
 
 ```smalltalk
 (
-var octaveParser = Optional(
-    RegexParser("\\d\\d?").map({|result| (\type: \octave, \value: result.asInteger )})
+var octaveParser = ScpOptional(
+    ScpRegexParser("\\d\\d?").map({|result| (\type: \octave, \value: result.asInteger )})
 ).map({|result| result ? (\type: \octave, \value: \previous) }); 
 )
 ```
@@ -262,28 +262,28 @@ Duration in Panola is indicated by using an underscore followed by a number. The
 
 As with the octave, the duration is optional, and the previous one should be reused while no new one is specified. In addition there are some special rules: if you only specify a divider, the multiplicator is automatically reset to 1. If you only specify a multiplier, the divider is automatically reset to 1.
 
-### Many parser
+### ScpMany parser
 
-Given that we can have zero or more dots as part of the duration, this is a good time to introduce a new kind of parser: the ```Many``` parser. The ```Many``` parser takes a parser *P* and returns a new parser that matches zero or more instances of *P*. The parse result that comes out of a ```Many``` parser is a list of parse results that come out of *P*. A map function that transforms the result of a ```Many``` parser therefore can address the result as an array.
+Given that we can have zero or more dots as part of the duration, this is a good time to introduce a new kind of parser: the ```ScpMany``` parser. The ```ScpMany``` parser takes a parser *P* and returns a new parser that matches zero or more instances of *P*. The parse result that comes out of a ```ScpMany``` parser is a list of parse results that come out of *P*. A map function that transforms the result of a ```ScpMany``` parser therefore can address the result as an array.
 
-Here the dots are completely optional, but in some cases you want to ensure that there's at least one match. In such cases you can use the ```ManyOne``` variant instead.
+Here the dots are completely optional, but in some cases you want to ensure that there's at least one match. In such cases you can use the ```ScpManyOne``` variant instead.
 
-### SequenceOf parser
+### ScpSequenceOf parser
 
-To parse a multiplier, we need to parse a sequence of two different parsers: one parser matches the \* sign, and another parser matches the digits that come after it. Same for the divider: one parser matches the / sign, and another parser matches the digits that come after it. For matching a sequence of parsers we use a ```SequenceOf``` parser. The ```SequenceOf``` parser takes a list of parsers *P, Q,..., Z* and tries to match them one after the other. As soon as one of these parsers fails, the complete ```SequenceOf``` fails. The parse result of a ```SequenceOf``` parser is a list of results, one entry for each parser *P, Q, ..., Z* in the ```SequenceOf``` parser.
+To parse a multiplier, we need to parse a sequence of two different parsers: one parser matches the \* sign, and another parser matches the digits that come after it. Same for the divider: one parser matches the / sign, and another parser matches the digits that come after it. For matching a sequence of parsers we use a ```ScpSequenceOf``` parser. The ```ScpSequenceOf``` parser takes a list of parsers *P, Q,..., Z* and tries to match them one after the other. As soon as one of these parsers fails, the complete ```ScpSequenceOf``` fails. The parse result of a ```ScpSequenceOf``` parser is a list of results, one entry for each parser *P, Q, ..., Z* in the ```ScpSequenceOf``` parser.
 
-### ParserFactory
+### ScpParserFactory
 
-To make life a bit easier, scparco comes with a ```ParserFactory``` convenience class that offers some ready-made parsers you may often need. There's nothing special about the parsers in ParserFactory, they are made like any parser you'd specify yourself. The duration parser uses the ```ParserFactory.makeFloatParser``` and ```ParserFactory.makeIntegerParser```. These parsers have a built-in map function that converts the parse result from string to a numerical value already. Nothing prevents you from adding a second map function to further transform the result, and this will be done here.
+To make life a bit easier, scparco comes with a ```ScpParserFactory``` convenience class that offers some ready-made parsers you may often need. There's nothing special about the parsers in ScpParserFactory, they are made like any parser you'd specify yourself. The duration parser uses the ```ScpParserFactory.makeFloatParser``` and ```ScpParserFactory.makeIntegerParser```. These parsers have a built-in map function that converts the parse result from string to a numerical value already. Nothing prevents you from adding a second map function to further transform the result, and this will be done here.
 
 ```smalltalk
 (
-var durationParser = Optional(SequenceOf([
-    StrParser("_"),
-    ParserFactory.makeFloatParser.map({|result| (\type: \duration, \value: result)}),
-    Many(StrParser(".")).map({|result| (\type: \durdots, \value: result.size)}),
-    Optional(SequenceOf([StrParser("*"), ParserFactory.makeIntegerParser]).map({|result| (\type: \durmultiplier, \value: result[1])})),
-    Optional(SequenceOf([StrParser("/"), ParserFactory.makeIntegerParser]).map({|result| (\type: \durdivider, \value: result[1])}))
+var durationParser = ScpOptional(ScpSequenceOf([
+    ScpStrParser("_"),
+    ScpParserFactory.makeFloatParser.map({|result| (\type: \duration, \value: result)}),
+    ScpMany(ScpStrParser(".")).map({|result| (\type: \durdots, \value: result.size)}),
+    ScpOptional(ScpSequenceOf([ScpStrParser("*"), ScpParserFactory.makeIntegerParser]).map({|result| (\type: \durmultiplier, \value: result[1])})),
+    ScpOptional(ScpSequenceOf([ScpStrParser("/"), ScpParserFactory.makeIntegerParser]).map({|result| (\type: \durdivider, \value: result[1])}))
 ])).map({
     |result|
     if (result.isNil) {
@@ -351,26 +351,26 @@ To parse properties, we need something to parse the property name (like *amp*) a
 
 ```smalltalk
 (
-var propertynameParser = RegexParser("@[a-zA-z][a-zA-Z0-9]*").map({|result| (\type: \propertyname, \value: result.drop(1))});
-var propertiesParser = Many(
-    Choice([
-        SequenceOf([
+var propertynameParser = ScpRegexParser("@[a-zA-z][a-zA-Z0-9]*").map({|result| (\type: \propertyname, \value: result.drop(1))});
+var propertiesParser = ScpMany(
+    ScpChoice([
+        ScpSequenceOf([
             propertynameParser,
-            StrParser("{"),
-            ParserFactory.makeFloatParser,
-            StrParser("}")
+            ScpStrParser("{"),
+            ScpParserFactory.makeFloatParser,
+            ScpStrParser("}")
         ]).map({|result| (\propertyname: result[0][\value], \type: \animatedproperty, \value: result[2])}),
-        SequenceOf([
+        ScpSequenceOf([
             propertynameParser,
-            StrParser("["),
-            ParserFactory.makeFloatParser,
-            StrParser("]")
+            ScpStrParser("["),
+            ScpParserFactory.makeFloatParser,
+            ScpStrParser("]")
         ]).map({|result| (\propertyname: result[0][\value], \type: \staticproperty, \value: result[2])}),
-        SequenceOf([
+        ScpSequenceOf([
             propertynameParser,
-            StrParser("^"),
-            ParserFactory.makeFloatParser,
-            StrParser("^")
+            ScpStrParser("^"),
+            ScpParserFactory.makeFloatParser,
+            ScpStrParser("^")
         ]).map({|result| (\propertyname: result[0][\value], \type: \oneshotproperty, \value: result[2])}),
 ]));
 )
@@ -382,8 +382,8 @@ Everything we've done so far can now be combined into a parser for a note. I lik
 
 ```smalltalk
 (
-var noteAndModAndOct = Choice([
-    SequenceOf([noteParser, noteModifier, octaveParser]).map({
+var noteAndModAndOct = ScpChoice([
+    ScpSequenceOf([noteParser, noteModifier, octaveParser]).map({
         |result|
         (\type: \note,
             \notename: result[0][\value],
@@ -393,12 +393,12 @@ var noteAndModAndOct = Choice([
     restParser
 ]);
 
-var noteAndModAndOctAndDur = SequenceOf([
+var noteAndModAndOctAndDur = ScpSequenceOf([
     noteAndModAndOct,
     durationParser
 ]).map({|result| (\pitch : result[0], \duration: result[1] ) });
 
-var noteAndModAndOctAndDurAndProp = SequenceOf([
+var noteAndModAndOctAndDurAndProp = ScpSequenceOf([
     noteAndModAndOctAndDur,
     propertiesParser]).map({|result| 
         (\type: \singlenote, 
@@ -413,15 +413,15 @@ Chords in Panola are defined as a list of notes between angular ```< >``` bracke
 
 ### makeBetween parser
 
-Since parsing *something* between delimiters is a common use case, scparco's ```ParserFactory``` provides a ```makeBetween``` parser. This makeBetween parser is a bit special, in that it takes a parser that matches the delimiters, and returns a function (not a parser!). This function needs to be called with another Parser as argument. This parser must match whatever lives between the delimiters.
+Since parsing *something* between delimiters is a common use case, scparco's ```ScpParserFactory``` provides a ```makeBetween``` parser. This makeBetween parser is a bit special, in that it takes a parser that matches the delimiters, and returns a function (not a parser!). This function needs to be called with another ScpParser as argument. This parser must match whatever lives between the delimiters.
 
 In other words, the general way of using ```makeBetween``` is:
 
 ```smalltalk
 (
-var f = ParserFactory.makeBetween(
-    StrParser("("), 
-    StrParser(")"));
+var f = ScpParserFactory.makeBetween(
+    ScpStrParser("("), 
+    ScpStrParser(")"));
 var parser = f.value(NoteParser); // parser that parses a note between ( and )
 )
 ```
@@ -435,9 +435,9 @@ Something that hasn't been discussed so far is how to handle white space. To tol
 Thinking back about the previous section with the ```makeBetween``` parser: we might be tempted to extend the parser as follows:
 
 ```smalltalk
-var f = ParserFactory.makeBetween(
-    SequenceOf([StrParser("<"), ParserFactory.makeWs]),
-    SequenceOf([ParserFActory.makeWs, StrParser(">")]));
+var f = ScpParserFactory.makeBetween(
+    ScpSequenceOf([ScpStrParser("<"), ScpParserFactory.makeWs]),
+    ScpSequenceOf([ParserFActory.makeWs, ScpStrParser(">")]));
 ```
 
 However, typically the parser that specifies the content that lives between the delimiters will also have some provisions to parse whitespace, so specifying two of them might be overkill. 
@@ -446,15 +446,15 @@ As a rule of thumb, I tend to specify whitespace only at the end of a parser, ne
 
 ```smalltalk
 (
-var betweenChordBrackets = ParserFactory.makeBetween(
-    SequenceOf([StrParser("<"), ParserFactory.makeWs]), // white space at the end of SequenceOf
-    StrParser(">")); // no whitespace before closing bracket...
+var betweenChordBrackets = ScpParserFactory.makeBetween(
+    ScpSequenceOf([ScpStrParser("<"), ScpParserFactory.makeWs]), // white space at the end of ScpSequenceOf
+    ScpStrParser(">")); // no whitespace before closing bracket...
 
 var chordParser = betweenChordBrackets.(
-    ManyOne(
-        SequenceOf([
+    ScpManyOne(
+        ScpSequenceOf([
             noteAndModAndOctAndDurAndProp,
-            ParserFactory.makeWs // ...because whitespace after note is handled here already
+            ScpParserFactory.makeWs // ...because whitespace after note is handled here already
         ]).map({|result| result[0] }); // remove whitespace from result
 )).map({|result| (\type: \chord, \notes : result) });
 )
@@ -464,12 +464,12 @@ var chordParser = betweenChordBrackets.(
 
 One has to be careful with optional whitespace parsers not to introduce infinite loops. Here's an example that will send supercollider into an infinite loop:
 
-Side-note: ```makeSepBy``` is a parser that has not been discussed yet. Similar to the idea of ```makeBetween```, it will create a parser that parses a list of things separated by another thing (like a list of numbers separated by commas). When you call ```makeSepBy``` it expects a parser as argument. This parser matches the separators (the commas) and it returns a function. This function will return a parser when you call it with a Parser that matches whatever is between the separators.
+Side-note: ```makeSepBy``` is a parser that has not been discussed yet. Similar to the idea of ```makeBetween```, it will create a parser that parses a list of things separated by another thing (like a list of numbers separated by commas). When you call ```makeSepBy``` it expects a parser as argument. This parser matches the separators (the commas) and it returns a function. This function will return a parser when you call it with a ScpParser that matches whatever is between the separators.
 
 ```smalltalk
 (
-ParserFactory.makeSepBy(ParserFactory.makeWs).(
-    ParserFactory.makeSepBy(StrParser(",")).(ParserFactory.makeFloatParser)
+ScpParserFactory.makeSepBy(ScpParserFactory.makeWs).(
+    ScpParserFactory.makeSepBy(ScpStrParser(",")).(ScpParserFactory.makeFloatParser)
 ).run("3,3,3 4,4,4").result // hoping to see [[3.0,3.0,3.0],[4.0,4.0,4.0]] as result
 )
 ```
@@ -480,8 +480,8 @@ uses *optional* whitespace (```makeWs```) instead of *mandatory* whitespace (```
 A way to write the above without causing an infinite loop would have been:
 
 ```smalltalk
-ParserFactory.makeSepBy(ParserFactory.makeWsOne).(
-    ParserFactory.makeSepBy(StrParser(",")).(ParserFactory.makeFloatParser)
+ScpParserFactory.makeSepBy(ScpParserFactory.makeWsOne).(
+    ScpParserFactory.makeSepBy(ScpStrParser(",")).(ScpParserFactory.makeFloatParser)
 ).run("3,3,3 4,4,4").result
 ```
 
@@ -492,14 +492,14 @@ With everything we've developed so far, it is now easy to parse multiple notes a
 
 ```smalltalk
 (
-var notelistParser = ManyOne(Choice([
-    SequenceOf([chordParser, ParserFactory.makeWs]).map({|result| result[0]}), // eat whitespace
-    SequenceOf([noteAndModAndOctAndDurAndProp, ParserFactory.makeWs]).map({|result| result[0] }) // eat whitespace
+var notelistParser = ScpManyOne(ScpChoice([
+    ScpSequenceOf([chordParser, ScpParserFactory.makeWs]).map({|result| result[0]}), // eat whitespace
+    ScpSequenceOf([noteAndModAndOctAndDurAndProp, ScpParserFactory.makeWs]).map({|result| result[0] }) // eat whitespace
 ]));
 )
 ```
 
-Note: the use of ```ManyOne```, which enforces that at least one note or chord is present.
+Note: the use of ```ScpManyOne```, which enforces that at least one note or chord is present.
 
 ## Handling repeats
 
@@ -521,28 +521,28 @@ In what follows, call such panola string a mixed note list. Mixed, because it mi
 
 This problem asks for a recursive solution and that's what we'll use. But there's a problem: we want to parse a mixed list of notes and repeated note list. The mixed list therefore depends on the notion of a repeated note list. But the repeated notelist can again contain a mixed list. We have a chicken and egg problem! Both definitions refer to each other (mutual recursion) and supercollider cannot handle that transparently.
 
-In such case we need to resort to a trick, which is to defer evaluation of parsers until everything is initialized and the parsers can refer to each other without problem. This deferring can be accomplished using the ParserFactory's ```forwardRef``` method in combination with supercollider's ```Thunk``` object. ```Thunk``` creates an unevaluated function - i.e. you can put stuff inside that doesn't exist yet and allows to evaluate it at a later time. ```forwardRef``` then disguises that unevaluated function as a regular parser: a parser that evaluates its ```Thunk``` when the actual parsing has started. At that moment, all Parsers have been initialized already, and parser can refer to each other without problem.
+In such case we need to resort to a trick, which is to defer evaluation of parsers until everything is initialized and the parsers can refer to each other without problem. This deferring can be accomplished using the ScpParserFactory's ```forwardRef``` method in combination with supercollider's ```Thunk``` object. ```Thunk``` creates an unevaluated function - i.e. you can put stuff inside that doesn't exist yet and allows to evaluate it at a later time. ```forwardRef``` then disguises that unevaluated function as a regular parser: a parser that evaluates its ```Thunk``` when the actual parsing has started. At that moment, all Parsers have been initialized already, and parser can refer to each other without problem.
 
 This gives us the final elements required to complete our mixed note list parser:
 
 ```smalltalk
 (
-var betweenRepeatBrackets = ParserFactory.makeBetween(
-    SequenceOf([StrParser("("), ParserFactory.makeWs]),
-    StrParser(")");
+var betweenRepeatBrackets = ScpParserFactory.makeBetween(
+    ScpSequenceOf([ScpStrParser("("), ScpParserFactory.makeWs]),
+    ScpStrParser(")");
 );
 
-var mixedNotelist = ParserFactory.forwardRef(Thunk({
-    ManyOne(Choice([repeatedNotelist, notelistParser])).map({|result| result.flatten(1); });
+var mixedNotelist = ScpParserFactory.forwardRef(Thunk({
+    ScpManyOne(ScpChoice([repeatedNotelist, notelistParser])).map({|result| result.flatten(1); });
 }));
 
-var repeatedNotelist = SequenceOf([
+var repeatedNotelist = ScpSequenceOf([
     betweenRepeatBrackets.(mixedNotelist),
-    ParserFactory.makeWs,
-    StrParser("*"),
-    ParserFactory.makeWs,
-    ParserFactory.makeIntegerParser,
-    ParserFactory.makeWs
+    ScpParserFactory.makeWs,
+    ScpStrParser("*"),
+    ScpParserFactory.makeWs,
+    ScpParserFactory.makeIntegerParser,
+    ScpParserFactory.makeWs
 ]).map({
     // unroll the loop already - not sure if this is a good idea (memory consumption!)
     // but it's easier to evaluate later on
@@ -579,24 +579,24 @@ Here's the full code required to parse a Panola string as developed in this docu
 
 ```smalltalk
 (
-var noteParser = RegexParser("[aAbBcCdDeEfFgG]").map({|result| (\type: \notename, \value: result.toLower) });
-var restParser = RegexParser("[rR]").map({|result| (\type: \rest) });
-var noteModifier = Optional(Choice([
-    StrParser("--").map({|result| (\type : \notemodifier, \value: \doubleflat) }),
-    StrParser("-").map({|result| (\type: \notemodifier, \value: \flat) }),
-    StrParser("#").map({|result| (\type: \notemodifier, \value: \sharp) }),
-    StrParser("x").map({|result| (\type: \notemodifier, \value: \doublesharp) })
+var noteParser = ScpRegexParser("[aAbBcCdDeEfFgG]").map({|result| (\type: \notename, \value: result.toLower) });
+var restParser = ScpRegexParser("[rR]").map({|result| (\type: \rest) });
+var noteModifier = ScpOptional(ScpChoice([
+    ScpStrParser("--").map({|result| (\type : \notemodifier, \value: \doubleflat) }),
+    ScpStrParser("-").map({|result| (\type: \notemodifier, \value: \flat) }),
+    ScpStrParser("#").map({|result| (\type: \notemodifier, \value: \sharp) }),
+    ScpStrParser("x").map({|result| (\type: \notemodifier, \value: \doublesharp) })
 ])).map({|result| result ? (\type: \notemodifier, \value: \natural) }); // map missing modifier to \natural sign
-var octaveParser = Optional(
-    RegexParser("\\d\\d?").map({|result| (\type: \octave, \value: result.asInteger )})
+var octaveParser = ScpOptional(
+    ScpRegexParser("\\d\\d?").map({|result| (\type: \octave, \value: result.asInteger )})
 ).map({|result| result ? (\type: \octave, \value: \previous) }); // map missing octave to \previous
 
-var durationParser = Optional(SequenceOf([
-    StrParser("_"),
-    ParserFactory.makeFloatParser.map({|result| (\type: \duration, \value: result)}),
-    Many(StrParser(".")).map({|result| (\type: \durdots, \value: result.size)}),
-    Optional(SequenceOf([StrParser("*"), ParserFactory.makeIntegerParser]).map({|result| (\type: \durmultiplier, \value: result[1])})),
-    Optional(SequenceOf([StrParser("/"), ParserFactory.makeIntegerParser]).map({|result| (\type: \durdivider, \value: result[1])}))
+var durationParser = ScpOptional(ScpSequenceOf([
+    ScpStrParser("_"),
+    ScpParserFactory.makeFloatParser.map({|result| (\type: \duration, \value: result)}),
+    ScpMany(ScpStrParser(".")).map({|result| (\type: \durdots, \value: result.size)}),
+    ScpOptional(ScpSequenceOf([ScpStrParser("*"), ScpParserFactory.makeIntegerParser]).map({|result| (\type: \durmultiplier, \value: result[1])})),
+    ScpOptional(ScpSequenceOf([ScpStrParser("/"), ScpParserFactory.makeIntegerParser]).map({|result| (\type: \durdivider, \value: result[1])}))
 ])).map({
     |result|
     if (result.isNil) {
@@ -628,35 +628,35 @@ var durationParser = Optional(SequenceOf([
     };
 });
 
-var propertynameParser = RegexParser("@[a-zA-z][a-zA-Z0-9]*").map({|result| (\type: \propertyname, \value: result.drop(1))});
-var propertiesParser = Many(
-    Choice([
-        SequenceOf([
+var propertynameParser = ScpRegexParser("@[a-zA-z][a-zA-Z0-9]*").map({|result| (\type: \propertyname, \value: result.drop(1))});
+var propertiesParser = ScpMany(
+    ScpChoice([
+        ScpSequenceOf([
             propertynameParser,
-            StrParser("{"),
-            ParserFactory.makeFloatParser,
-            StrParser("}")
+            ScpStrParser("{"),
+            ScpParserFactory.makeFloatParser,
+            ScpStrParser("}")
         ]).map({|result| (\propertyname: result[0][\value], \type: \animatedproperty, \value: result[2])}),
-        SequenceOf([
+        ScpSequenceOf([
             propertynameParser,
-            StrParser("["),
-            ParserFactory.makeFloatParser,
-            StrParser("]")
+            ScpStrParser("["),
+            ScpParserFactory.makeFloatParser,
+            ScpStrParser("]")
         ]).map({|result| (\propertyname: result[0][\value], \type: \staticproperty, \value: result[2])}),       
-        SequenceOf([
+        ScpSequenceOf([
             propertynameParser,
-            StrParser("^"),
-            ParserFactory.makeFloatParser,
-            StrParser("^")
+            ScpStrParser("^"),
+            ScpParserFactory.makeFloatParser,
+            ScpStrParser("^")
         ]).map({|result| (\propertyname: result[0][\value], \type: \oneshotproperty, \value: result[2])}),
 ]));
 
-var noteAndMod = Choice([
-    SequenceOf([noteParser, noteModifier]),
+var noteAndMod = ScpChoice([
+    ScpSequenceOf([noteParser, noteModifier]),
     restParser
 ]);
-var noteAndModAndOct = Choice([
-    SequenceOf([noteParser, noteModifier, octaveParser]).map({
+var noteAndModAndOct = ScpChoice([
+    ScpSequenceOf([noteParser, noteModifier, octaveParser]).map({
         |result|
         (\type: \note,
             \notename: result[0][\value],
@@ -666,48 +666,48 @@ var noteAndModAndOct = Choice([
     restParser
 ]);
 
-var noteAndModAndOctAndDur = SequenceOf([
+var noteAndModAndOctAndDur = ScpSequenceOf([
     noteAndModAndOct,
     durationParser
 ]).map({|result| (\pitch : result[0], \duration: result[1] ) });
 
-var noteAndModAndOctAndDurAndProp = SequenceOf([
+var noteAndModAndOctAndDurAndProp = ScpSequenceOf([
     noteAndModAndOctAndDur,
     propertiesParser]).map({|result| (\type: \singlenote, \info : ( \note : result[0], \props : result[1] ) ); });
 
-var betweenChordBrackets = ParserFactory.makeBetween(
-    SequenceOf([StrParser("<"), ParserFactory.makeWs]),
-    StrParser(">"));
+var betweenChordBrackets = ScpParserFactory.makeBetween(
+    ScpSequenceOf([ScpStrParser("<"), ScpParserFactory.makeWs]),
+    ScpStrParser(">"));
 
 var chordParser = betweenChordBrackets.(
-    ManyOne(
-        SequenceOf([
+    ScpManyOne(
+        ScpSequenceOf([
             noteAndModAndOctAndDurAndProp,
-            ParserFactory.makeWs
+            ScpParserFactory.makeWs
         ]).map({|result| result[0] }); // remove whitespace from result
 )).map({|result| (\type: \chord, \notes : result) });
 
-var notelistParser = ManyOne(Choice([
-    SequenceOf([chordParser, ParserFactory.makeWs]).map({|result| result[0]}), // eat whitespace
-    SequenceOf([noteAndModAndOctAndDurAndProp, ParserFactory.makeWs]).map({|result| result[0] }) // eat whitespace
+var notelistParser = ScpManyOne(ScpChoice([
+    ScpSequenceOf([chordParser, ScpParserFactory.makeWs]).map({|result| result[0]}), // eat whitespace
+    ScpSequenceOf([noteAndModAndOctAndDurAndProp, ScpParserFactory.makeWs]).map({|result| result[0] }) // eat whitespace
 ]));
 
-var betweenRepeatBrackets = ParserFactory.makeBetween(
-    SequenceOf([StrParser("("), ParserFactory.makeWs]),
-    StrParser(")");
+var betweenRepeatBrackets = ScpParserFactory.makeBetween(
+    ScpSequenceOf([ScpStrParser("("), ScpParserFactory.makeWs]),
+    ScpStrParser(")");
 );
 
-var mixedNotelist = ParserFactory.forwardRef(Thunk({
-    ManyOne(Choice([repeatedNotelist, notelistParser])).map({|result| result.flatten(1); });
+var mixedNotelist = ScpParserFactory.forwardRef(Thunk({
+    ScpManyOne(ScpChoice([repeatedNotelist, notelistParser])).map({|result| result.flatten(1); });
 }));
 
-var repeatedNotelist = SequenceOf([
+var repeatedNotelist = ScpSequenceOf([
     betweenRepeatBrackets.(mixedNotelist),
-    ParserFactory.makeWs,
-    StrParser("*"),
-    ParserFactory.makeWs,
-    ParserFactory.makeIntegerParser,
-    ParserFactory.makeWs
+    ScpParserFactory.makeWs,
+    ScpStrParser("*"),
+    ScpParserFactory.makeWs,
+    ScpParserFactory.makeIntegerParser,
+    ScpParserFactory.makeWs
 ]).map({
     // unroll the loop already - not sure if this is a good idea (memory consumption!)
     // but it's easier to evaluate later on

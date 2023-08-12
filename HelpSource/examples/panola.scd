@@ -1,22 +1,22 @@
 (
-var noteParser = RegexParser("[aAbBcCdDeEfFgG]").map({|result| (\type: \notename, \value: result.toLower) });
-var restParser = RegexParser("[rR]").map({|result| (\type: \rest) });
-var noteModifier = Optional(Choice([
-	StrParser("--").map({|result| (\type : \notemodifier, \value: \doubleflat) }),
-	StrParser("-").map({|result| (\type: \notemodifier, \value: \flat) }),
-	StrParser("#").map({|result| (\type: \notemodifier, \value: \sharp) }),
-	StrParser("x").map({|result| (\type: \notemodifier, \value: \doublesharp) })
+var noteParser = ScpRegexParser("[aAbBcCdDeEfFgG]").map({|result| (\type: \notename, \value: result.toLower) });
+var restParser = ScpRegexParser("[rR]").map({|result| (\type: \rest) });
+var noteModifier = ScpOptional(ScpChoice([
+	ScpStrParser("--").map({|result| (\type : \notemodifier, \value: \doubleflat) }),
+	ScpStrParser("-").map({|result| (\type: \notemodifier, \value: \flat) }),
+	ScpStrParser("#").map({|result| (\type: \notemodifier, \value: \sharp) }),
+	ScpStrParser("x").map({|result| (\type: \notemodifier, \value: \doublesharp) })
 ])).map({|result| result ? (\type: \notemodifier, \value: \natural) }); // map missing modifier to \natural sign
-var octaveParser = Optional(
-	RegexParser("\\d\\d?").map({|result| (\type: \octave, \value: result.asInteger )})
+var octaveParser = ScpOptional(
+	ScpRegexParser("\\d\\d?").map({|result| (\type: \octave, \value: result.asInteger )})
 ).map({|result| result ? (\type: \octave, \value: \previous) }); // map missing octave to \previous
 
-var durationParser = Optional(SequenceOf([
-	StrParser("_"),
-	ParserFactory.makeFloatParser.map({|result| (\type: \duration, \value: result)}),
-	Many(StrParser(".")).map({|result| (\type: \durdots, \value: result.size)}),
-	Optional(SequenceOf([StrParser("*"), ParserFactory.makeIntegerParser]).map({|result| (\type: \durmultiplier, \value: result[1])})),
-	Optional(SequenceOf([StrParser("/"), ParserFactory.makeIntegerParser]).map({|result| (\type: \durdivider, \value: result[1])}))
+var durationParser = ScpOptional(ScpSequenceOf([
+	ScpStrParser("_"),
+	ScpParserFactory.makeFloatParser.map({|result| (\type: \duration, \value: result)}),
+	ScpMany(ScpStrParser(".")).map({|result| (\type: \durdots, \value: result.size)}),
+	ScpOptional(ScpSequenceOf([ScpStrParser("*"), ScpParserFactory.makeIntegerParser]).map({|result| (\type: \durmultiplier, \value: result[1])})),
+	ScpOptional(ScpSequenceOf([ScpStrParser("/"), ScpParserFactory.makeIntegerParser]).map({|result| (\type: \durdivider, \value: result[1])}))
 ])).map({
 	|result|
 	if (result.isNil) {
@@ -48,35 +48,35 @@ var durationParser = Optional(SequenceOf([
 	};
 });
 
-var propertynameParser = RegexParser("@[a-zA-z][a-zA-Z0-9]*").map({|result| (\type: \propertyname, \value: result.drop(1))});
-var propertiesParser = Many(
-	Choice([
-		SequenceOf([
+var propertynameParser = ScpRegexParser("@[a-zA-z][a-zA-Z0-9]*").map({|result| (\type: \propertyname, \value: result.drop(1))});
+var propertiesParser = ScpMany(
+	ScpChoice([
+		ScpSequenceOf([
 			propertynameParser,
-			StrParser("{"),
-			ParserFactory.makeFloatParser,
-			StrParser("}")
+			ScpStrParser("{"),
+			ScpParserFactory.makeFloatParser,
+			ScpStrParser("}")
 		]).map({|result| (\propertyname: result[0][\value], \type: \animatedproperty, \value: result[2])}),
-		SequenceOf([
+		ScpSequenceOf([
 			propertynameParser,
-			StrParser("["),
-			ParserFactory.makeFloatParser,
-			StrParser("]")
+			ScpStrParser("["),
+			ScpParserFactory.makeFloatParser,
+			ScpStrParser("]")
 		]).map({|result| (\propertyname: result[0][\value], \type: \staticproperty, \value: result[2])}),
-		SequenceOf([
+		ScpSequenceOf([
 			propertynameParser,
-			StrParser("^"),
-			ParserFactory.makeFloatParser,
-			StrParser("^")
+			ScpStrParser("^"),
+			ScpParserFactory.makeFloatParser,
+			ScpStrParser("^")
 		]).map({|result| (\propertyname: result[0][\value], \type: \oneshotproperty, \value: result[2])}),
 ]));
 
-var noteAndMod = Choice([
-	SequenceOf([noteParser, noteModifier]),
+var noteAndMod = ScpChoice([
+	ScpSequenceOf([noteParser, noteModifier]),
 	restParser
 ]);
-var noteAndModAndOct = Choice([
-	SequenceOf([noteParser, noteModifier, octaveParser]).map({
+var noteAndModAndOct = ScpChoice([
+	ScpSequenceOf([noteParser, noteModifier, octaveParser]).map({
 		|result|
 		(\type: \note,
 			\notename: result[0][\value],
@@ -86,48 +86,48 @@ var noteAndModAndOct = Choice([
 	restParser
 ]);
 
-var noteAndModAndOctAndDur = SequenceOf([
+var noteAndModAndOctAndDur = ScpSequenceOf([
 	noteAndModAndOct,
 	durationParser
 ]).map({|result| (\pitch : result[0], \duration: result[1] ) });
 
-var noteAndModAndOctAndDurAndProp = SequenceOf([
+var noteAndModAndOctAndDurAndProp = ScpSequenceOf([
 	noteAndModAndOctAndDur,
 	propertiesParser]).map({|result| (\type: \singlenote, \info : ( \note : result[0], \props : result[1] ) ); });
 
-var betweenChordBrackets = ParserFactory.makeBetween(
-	SequenceOf([StrParser("<"), ParserFactory.makeWs]),
-	StrParser(">"));
+var betweenChordBrackets = ScpParserFactory.makeBetween(
+	ScpSequenceOf([ScpStrParser("<"), ScpParserFactory.makeWs]),
+	ScpStrParser(">"));
 
 var chordParser = betweenChordBrackets.(
-	ManyOne(
-		SequenceOf([
+	ScpManyOne(
+		ScpSequenceOf([
 			noteAndModAndOctAndDurAndProp,
-			ParserFactory.makeWs
+			ScpParserFactory.makeWs
 		]).map({|result| result[0] }); // remove whitespace from result
 )).map({|result| (\type: \chord, \notes : result) });
 
-var notelistParser = ManyOne(Choice([
-	SequenceOf([chordParser, ParserFactory.makeWs]).map({|result| result[0]}), // eat whitespace
-	SequenceOf([noteAndModAndOctAndDurAndProp, ParserFactory.makeWs]).map({|result| result[0] }) // eat whitespace
+var notelistParser = ScpManyOne(ScpChoice([
+	ScpSequenceOf([chordParser, ScpParserFactory.makeWs]).map({|result| result[0]}), // eat whitespace
+	ScpSequenceOf([noteAndModAndOctAndDurAndProp, ScpParserFactory.makeWs]).map({|result| result[0] }) // eat whitespace
 ]));
 
-var betweenRepeatBrackets = ParserFactory.makeBetween(
-	SequenceOf([StrParser("("), ParserFactory.makeWs]),
-	StrParser(")");
+var betweenRepeatBrackets = ScpParserFactory.makeBetween(
+	ScpSequenceOf([ScpStrParser("("), ScpParserFactory.makeWs]),
+	ScpStrParser(")");
 );
 
-var mixedNotelist = ParserFactory.forwardRef(Thunk({
-	ManyOne(Choice([repeatedNotelist, notelistParser])).map({|result| result.flatten(1); });
+var mixedNotelist = ScpParserFactory.forwardRef(Thunk({
+	ScpManyOne(ScpChoice([repeatedNotelist, notelistParser])).map({|result| result.flatten(1); });
 }));
 
-var repeatedNotelist = SequenceOf([
+var repeatedNotelist = ScpSequenceOf([
 	betweenRepeatBrackets.(mixedNotelist),
-	ParserFactory.makeWs,
-	StrParser("*"),
-	ParserFactory.makeWs,
-	ParserFactory.makeIntegerParser,
-	ParserFactory.makeWs
+	ScpParserFactory.makeWs,
+	ScpStrParser("*"),
+	ScpParserFactory.makeWs,
+	ScpParserFactory.makeIntegerParser,
+	ScpParserFactory.makeWs
 ]).map({
 	// unroll the loop already - not sure if this is a good idea (memory consumption!)
 	// but it's easier to evaluate later on

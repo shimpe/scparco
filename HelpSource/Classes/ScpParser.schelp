@@ -1,0 +1,107 @@
+TITLE:: ScpParser
+summary:: a base class for Parsers
+categories:: Parsing Tools
+related:: Classes/ParserState, Classes/ScpStrParser, Classes/ScpRegexParser, Classes/ScpChoice, Classes/ScpSequenceOf, Classes/ScpMany, Classes/ScpManyOne, Classes/ScpParserFactory
+
+DESCRIPTION::
+ScpParser is the base class for everything that performs parsing in this library.
+Parsers for complex systems are made by combining together Parsers for smaller systems
+using special-purpose parsers like ScpChoice and ScpSequenceOf.
+
+One can call map on a ScpParser to get a new ScpParser that manipulates the parsing result in some way.
+E.g. in an IntegerParser, it would make sense to add a map that transforms the result into an actual integer as opposed to a just a string.
+
+One can call chain on a ScpParser to decide how parsing will proceed based on the parsing results so far. See the unit tests for some example.
+
+One can call errorMap on a ScpParser to contextualize a parsing error message (i.e. replace the generic error message with something that makes sense to the end user - in one case an IntegerParser could represent a house number whereas in another case it could represent a number of apples. Using errorMap you can warn that the system failed to parse a "house number" as opposed to warning that it failed to parse an "integer").
+
+
+
+CLASSMETHODS::
+
+METHOD:: new
+creates a new ScpParser
+
+returns:: ScpParser
+
+INSTANCEMETHODS::
+
+METHOD:: parserStateTransformer
+	a function that takes a ParserState and returns an updated ParserState
+	this function forms the heart of every ScpParser
+	
+
+returns:: ParserState
+METHOD:: parserInit
+initializes a new ScpParser
+
+returns:: ScpParser
+METHOD:: run
+runs the ScpParser on a piece of text and produces a ParserState. The ParserState contains the parse result or error information. Running the parser happens by calling its parserStateTransformer function on an initial state constructed from the target.
+
+ARGUMENT:: target
+text/Int8Array to be parsed
+
+ARGUMENT:: trace
+boolean to indicate if the parser should log a trace (for debugging)
+
+returns:: ParserState
+METHOD:: map
+	map takes a ScpParser an produces a new ScpParser that manipulates its parsing result according to the wishes of the user.
+
+	map allows an arbitrary transformation on a parser result to be specified
+	fn is the function that maps the parse result to the desired result
+
+	e.g. you could use map to transform the result of an IntegerParser from a string to an actual integer
+	
+
+ARGUMENT:: fn
+a user-provided function that transforms the string parse result into the desired parse result (e.g. conversion from string to integer)
+
+returns:: a new ScpParser that will transform the parse result using the fn function
+METHOD:: chain
+	several ways to explain the same thing:
+
+	fn takes parse result and returns a parser
+	chain returns new state after running parser selected by fn on current state
+
+	chain takes a ScpParser and produces a new ScpParser. This new parser is made according to a user-specified function fn,
+	which will receive the current parser state as an argument, and therefore can take it into account (i.e. the user supplied function can inspect the parse results until now to decide how to proceed). This makes the parsing process context-aware.
+
+	chain allows dynamic selection of a next parser based on what was just parsed
+	fn is the function that selects the next parser based on the parse result
+
+	chain takes a function that takes a parse result, and uses it to select a next parser,
+	and runs that next parser on the state so far to return the next state
+
+	because map and chain take Parsers and produce new Parsers, they can also be combined in any order you like
+	
+
+ARGUMENT:: fn
+user supplied function that takes parse result so far and returns a new ScpParser based on that result
+
+returns:: ScpParser
+METHOD:: log
+	log a message when the parser is finished
+	
+
+ARGUMENT:: msg
+user supplied string that will be logged to the post window (debugging tool)
+
+returns:: ScpParser
+METHOD:: errorMap
+	errorMap takes a ScpParser and produces a new ScpParser with a modified error message. This allows you to contextualize the  error messages (e.g. warn about a "missing house number" instead of a generic "failed to parse integer".)
+	[method.errorMap.args]
+	fn = "user supplied function that receives generic error msg and index in the target at the moment parsing goes wrong, and returns a new error msg"
+	[method.errorMap.returns]
+	what = "ScpParser"
+	
+
+returns:: this instance of ScpParser
+
+
+EXAMPLES::
+
+code::
+(FIXME add some example code)
+::

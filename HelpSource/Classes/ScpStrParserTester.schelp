@@ -1,0 +1,16 @@
+TITLE:: ScpStrParserTester
+summary:: unit tests for ScpStrParser
+categories:: Parsing Tools
+related:: Classes/ScpStrParser
+
+DESCRIPTION::
+unit tests for ScpStrParser
+
+
+
+
+EXAMPLES::
+
+code::
+(FIXME add some example code)
+::

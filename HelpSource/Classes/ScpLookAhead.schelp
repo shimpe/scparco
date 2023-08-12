@@ -1,0 +1,61 @@
+TITLE:: ScpLookAhead
+summary:: a specialized ScpParser that tries to match a ScpParser and succeeds if the matching succeeds. It does not advance the ParserState index.
+categories:: Parsing Tools
+related:: Classes/ScpParser
+
+DESCRIPTION::
+ScpLookAhead is a parser to check if something specific follows, but if it succeeds, it doesn't alter the parsing state. This can be used to decide how to proceed parsing based on what text is coming.
+
+
+
+CLASSMETHODS::
+
+METHOD:: new
+new creates a new ScpLookAhead ScpParser
+
+ARGUMENT:: parser
+a parser that needs to match the next text for ScpLookAhead to succeed
+
+returns:: ScpLookAhead
+
+INSTANCEMETHODS::
+
+METHOD:: init
+init initializes the ScpLookAhead parser with a suitable parserStateTransformer function that tries to match the given parser but doesn't advance parser state
+
+ARGUMENT:: parser
+a parser
+
+returns:: ScpLookAhead
+
+EXAMPLES::
+
+code::
+	(
+	// note: you can much better make this parser without lookahead (see below); just a contrived example
+	var exclLetter = ScpRegexParser("[!a-zA-Z]+"); // must include "!" because ScpLookAhead won't consume the !
+	var quesLetter = ScpRegexParser("[?a-zA-Z]+"); // must include "?" because ScpLookAhead won't consume the ?
+	var c = ScpMany(
+		ScpChoice([
+			ScpSequenceOf([
+				ScpLookAhead(ScpStrParser("!")),
+				exclLetter.map({|value| (\type: \exclamation, \value : value)})]).map({|result| result[1]}), // map removes the result of lookahead
+			ScpSequenceOf([
+				ScpLookAhead(ScpStrParser("?")),
+				quesLetter.map({|value| (\type: \question, \value : value)})]).map({|result| result[1]}),
+	])); // map removes the result of lookahead
+	var result = c.run("!hello?why!yay?ohnoes");
+	result.result.postcs;
+	)
+	(
+	// same thing without ScpLookAhead
+	var exclLetter = ScpRegexParser("[!][a-zA-Z]+");
+	var quesLetter = ScpRegexParser("[?][a-zA-Z]+");
+	var c = ScpMany(ScpChoice([
+				exclLetter.map({|value| (\type: \exclamation, \value : value)}),
+				quesLetter.map({|value| (\type: \question, \value: value)})]));
+	var result = c.run("!hello?why!yay?ohnoes");
+	result.result.postcs;
+	)
+	
+::

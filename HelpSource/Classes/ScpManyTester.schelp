@@ -1,0 +1,16 @@
+TITLE:: ScpManyTester
+summary:: unit tests for ScpMany and ScpManyOne
+categories:: Parsing Tools
+related:: Classes/ScpMany, Classes/ScpManyOne
+
+DESCRIPTION::
+unit tests for ScpMany and ScpManyOne
+
+
+
+
+EXAMPLES::
+
+code::
+(FIXME add some example code)
+::

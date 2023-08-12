@@ -1,20 +1,20 @@
 (
 // simple calculator
 // first the parser
-var numberParser = ParserFactory.makeFloatParser.map({|x| (\type : \number, \value : x) });
-var operatorParser = Choice([StrParser("+"), StrParser("-"), StrParser("*"), StrParser("/")]);
-var betweenBrackets = ParserFactory.makeBetween(StrParser("("), StrParser(")"));
-var expression = ParserFactory.forwardRef(Thunk({
-	Choice([
+var numberParser = ScpParserFactory.makeFloatParser.map({|x| (\type : \number, \value : x) });
+var operatorParser = ScpChoice([ScpStrParser("+"), ScpStrParser("-"), ScpStrParser("*"), ScpStrParser("/")]);
+var betweenBrackets = ScpParserFactory.makeBetween(ScpStrParser("("), ScpStrParser(")"));
+var expression = ScpParserFactory.forwardRef(Thunk({
+	ScpChoice([
 		numberParser,
 		operationParser
 	])
 }));
-var operationParser = betweenBrackets.(SequenceOf([
+var operationParser = betweenBrackets.(ScpSequenceOf([
 	operatorParser,
-	ParserFactory.makeWs,
+	ScpParserFactory.makeWs,
 	expression,
-	ParserFactory.makeWs,
+	ScpParserFactory.makeWs,
 	expression
 ])).map({ |results| (\type: \operation, \value : (\op : results[0], \a : results[2], \b : results[4]) ) });
 

@@ -1,0 +1,16 @@
+TITLE:: ScpChoiceTester
+summary:: unit tests for ScpChoice
+categories:: Parsing Tools
+related:: Classes/ScpChoice
+
+DESCRIPTION::
+unit tests for ScpChoice
+
+
+
+
+EXAMPLES::
+
+code::
+(FIXME add some example code)
+::

@@ -1,0 +1,16 @@
+TITLE:: ScpLookAheadTester
+summary:: unit tests for ScpLookAhead
+categories:: Parsing Tools
+related:: Classes/ScpLookAhead
+
+DESCRIPTION::
+unit tests for ScpLookAhead
+
+
+
+
+EXAMPLES::
+
+code::
+(FIXME add some example code)
+::

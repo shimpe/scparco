@@ -1,0 +1,41 @@
+TITLE:: ScpStrParser
+summary:: a ScpParser that can match a literal string
+categories:: Parsing Tools
+related:: Classes/ScpRegexParser
+
+DESCRIPTION::
+ScpStrParser can match a literal string in a text.
+
+
+
+CLASSMETHODS::
+
+METHOD:: new
+creates a new ScpStrParser
+
+ARGUMENT:: str
+the string to match
+
+returns:: a new ScpStrParser
+
+INSTANCEMETHODS::
+
+METHOD:: init
+initializes a new ScpStrParser
+
+ARGUMENT:: str
+the string to match
+
+returns:: an initialized ScpStrParser
+
+EXAMPLES::
+
+code::
+	(
+	var text = "hello world!goodbye world!";
+	var sp = ScpStrParser("hello world!");
+	var result = sp.run(text); // expected result: "hello world!"
+	result.result.postcs;
+	)
+	
+::

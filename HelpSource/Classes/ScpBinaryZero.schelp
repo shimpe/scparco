@@ -1,0 +1,37 @@
+TITLE:: ScpBinaryZero
+summary:: a specialized ScpParser that can match a single binary 0 from a binary stream (contained in an Int8Array).
+categories:: Parsing Tools
+related:: Classes/ScpParser
+
+DESCRIPTION::
+ScpBinaryZero is a ScpParser that matches a single 0 bit in a binary stream (contained in an Int8Array). Building block for binary stream parsers.
+
+
+
+CLASSMETHODS::
+
+METHOD:: new
+new creates a new ScpBinaryZero ScpParser
+
+returns:: ScpBinaryZero
+
+INSTANCEMETHODS::
+
+METHOD:: init
+init initializes the ScpBinaryZero parser with a suitable parserStateTransformer function that consumes a bit and advances the parser index
+
+ARGUMENT:: parsers
+a list of parsers
+
+returns:: ScpBinaryZero
+
+EXAMPLES::
+
+code::
+	(
+	var p1 = ScpMany(ScpBinaryZero());
+	var r1 = p1.run(Int8Array[2r00011101]);
+	r1.prettyprint; // expect [0, 0, 0]
+	)
+	
+::

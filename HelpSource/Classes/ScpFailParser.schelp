@@ -1,0 +1,42 @@
+TITLE:: ScpFailParser
+summary:: a ScpParser that always fails with a given error msg.
+categories:: Parsing Tools
+related:: Classes/ScpRegexParser
+
+DESCRIPTION::
+ScpFailParser always fails and can be used to disguise something as a ScpParser that failed with a given error msg.
+
+
+
+CLASSMETHODS::
+
+METHOD:: new
+creates a new ScpFailParser
+
+ARGUMENT:: errorMsg
+the errorMsg with which to fail
+
+returns:: a new ScpFailParser
+
+INSTANCEMETHODS::
+
+METHOD:: init
+initializes a new ScpFailParser
+
+ARGUMENT:: errorMsg
+the errorMsg with which to fail
+
+returns:: an initialized ScpFailParser
+
+EXAMPLES::
+
+code::
+	(
+      var t = "123$56%%";
+	  var fail = ScpFailParser("What were you thinking?!");
+      var result = fail.run(t);
+	  result.isError.postcs; // expect true
+	  result.errorMsg.postcs; // expect "What were you thinking?"
+	)
+	
+::

@@ -1,0 +1,42 @@
+TITLE:: ScpSucceedParser
+summary:: a ScpParser that always succeeds.
+categories:: Parsing Tools
+related:: Classes/ScpRegexParser
+
+DESCRIPTION::
+ScpSucceedParser always succeeds and can be used to disguise something as a ScpParser that has thing as its result
+
+
+
+CLASSMETHODS::
+
+METHOD:: new
+creates a new ScpSucceedParser
+
+ARGUMENT:: thing
+the thing to disguise as a ScpParser with thing as parse result
+
+returns:: a new ScpSucceedParser
+
+INSTANCEMETHODS::
+
+METHOD:: init
+initializes a new ScpSucceedParser
+
+ARGUMENT:: thing
+the thing to disguise as a ScpParser that has thing as parse result
+
+returns:: an initialized ScpSucceedParser
+
+EXAMPLES::
+
+code::
+	(
+      var t = "123$56%%";
+      var success = ScpSucceedParser(t);
+      var result = success.run(t);
+	  result.isError.postcs; // expect false
+      result.result.postcs; // expect "123$56%%"
+	)
+	
+::

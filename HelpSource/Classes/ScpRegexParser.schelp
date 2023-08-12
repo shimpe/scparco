@@ -1,0 +1,40 @@
+TITLE:: ScpRegexParser
+summary:: a specialized ScpParser that can recognize a regex
+categories:: Parsing Tools
+related:: Classes/ScpParser, Classes/ScpStrParser
+
+DESCRIPTION::
+a ScpRegexParser takes a regex and succeeds if it can match that regex. ScpRegexParser can be used as the basis for many simple parsers like numbers or email adresses
+
+
+CLASSMETHODS::
+
+METHOD:: new
+creates a new ScpRegexParser
+
+ARGUMENT:: regex
+regex to be recognized
+
+returns:: ScpRegexParser
+
+INSTANCEMETHODS::
+
+METHOD:: init
+initializes a ScpRegexParser
+
+ARGUMENT:: regex
+regex to be recognized
+
+returns:: ScpRegexParser
+
+EXAMPLES::
+
+code::
+	(
+	var p = ScpRegexParser("[A-Za-z]+");
+	var result = p.run("Hello world!"); // expect to see result "Hello" and index has shifted to position 5
+	result.result.postcs;
+	result.index.debug("index");
+	)
+	
+::
