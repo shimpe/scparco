@@ -37,7 +37,7 @@ Panola("d4_4@amp[0.1] f a f g e f d d_8 d_8 f_4 a f g e d_2").asPbind.play;
 )
 ```
 
-Or if we want a crescendo from the start of the phrase until the end, we can simply use animated properties:
+Or if we want a crescendo from the start of the phrase until the end, we can use animated properties:
 
 ```smalltalk
 Panola("d4_4@amp{0.1} f a f g e f d d_8 d_8 f_4 a f g e d_2@amp{0.4}").asPbind.play;
@@ -45,11 +45,11 @@ Panola("d4_4@amp{0.1} f a f g e f d d_8 d_8 f_4 a f g e d_2@amp{0.4}").asPbind.p
 
 In the above specification, amplitude will smoothly increase from 0.1 to 0.4. This document is not intended as Panola tutorial - see the Panola documentation for many more examples and explanations. 
 
-# Parsing Panola
+## Parsing Panola
 
 When developing a parser for a non-trivial language, I prefer to work bottom-up. Each subparser can be fully tested before we move on to bigger and better things.
 
-## Parsing a note name
+### Parsing a note name
 
 Note names in Panola are written using a single character (a, b, c, d, e, f or g). I also allow uppercase letters to be used, although I've never seen someone use those in a practical score.
 
@@ -93,6 +93,7 @@ result:  a
 ```
 
 With a wrong note name, however, an error is signaled and the parser index remains at 0:
+
 ```smalltalk
 (
 var ps;
@@ -160,17 +161,22 @@ In this trivial example, the output does not teach us a lot, but for more compli
 Our specification for note names allows both lowercase and uppercase characters, without difference in meaning. To make our lives easier, we can transform the parser result to contain some contextual information, and to get rid of the uppercase note names by making them lower case.
 
 In the first version we had:
+
 ```smalltalk
 var ps;
 var noteparser = ScpRegexParser("[a-gA-G]");
 ps = noteparser.run("A#");
 ps.result.debug("result");
 ```
-which displays: 
+
+which displays:
+
 ```text
 result: A
 ```
+
 With a result mapper, we can transform the parse result and add some structure or record some contextual information:
+
 ```smalltalk
 (
 var noteparser = ScpRegexParser("[aAbBcCdDeEfFgG]").map({|result| 
@@ -179,24 +185,29 @@ var ps = noteparser.run("A#");
 ps.result.debug("result");
 )
 ```
+
 The parse result now looks like:
+
 ```text
 result: ( 'type': notename, 'value': a )
 ```
-Much better already: the uppercase *A* has been transformed into a lowercase a, and how the parser now returns an event with extra information (a 'type' and a 'value'). Unless we explicitly add some extra information in the parse result about the fact that *A* was specified in uppercase, this information, because of the mapping function that calls .lowercase, is now irrevocably lost. But as it's not needed for Panola to function properly this is not a problem.
+
+Much better already: the uppercase *A* has been transformed into a lowercase a, and the parser now returns an event with extra information (a 'type' and a 'value'). Unless we explicitly add some extra information in the parse result about the fact that *A* was specified in uppercase, this information, because of the mapping function that calls .toLower, is now irrevocably lost. But as it's not needed for Panola to function properly this is not a problem.
 
 Moving forward, the Panola parser will make heavy use of mapping to document or simplify details of the internal structure of the input strings.
 
-## What about rests?
+### What about rests?
 
 No music language can be complete without a specification of rests. In Panola a rest is notated with an *r* symbol. So why didn't we just add an "rR" in our note name parser? The reason has to do with semantics: to a note name one can assign many properties that make no sense in combination with a rest, like a pitch modifier (sharp, flat, ...) or an octave indication.
 
 So, for rests a separate RestParser is specified:
+
 ```smalltalk
 (
 var restParser = ScpRegexParser("[rR]").map({|result| (\type: \rest) });
 )
 ```
+
 Mapping again is used to add some extra information and structure into the parse result. We can try out if the rest parser works:
 
 ```smalltalk
@@ -206,26 +217,28 @@ var ps = restParser.run("r");
 ps.result.debug("result");
 )
 ```
+
 which gives the desired result
+
 ```text
 result: ( 'type': rest )
 ```
 
-## Pitch alteration marks
+### Pitch alteration marks
 
 A note name alone does not suffice to specify a pitch. Pitches can optionally be altered by decorating the note name with a sharp (#), a flat (-), a double sharp (x) or a double flat (--) Note: later also an octave specification will be needed, but in this section we concentrate on the alteration marks. 
 
-### ScpChoice
+#### ScpChoice
 
 Small parsers like the ones we made so far can be combined together into bigger parsers. In this case we will make a small sharp parser, a flat parser a double sharp parser and double flat parser. Then a ```ScpChoice``` parser will be used which can try different alternatives until one succeeds. The ```ScpChoice``` parser will be wrapped in an ```ScpOptional``` parser, because not every note name is decorated with a alteration mark.
 
-### Pitfall...
+#### Pitfall...
 
 Here we encounter a subtle pitfall: if a pitch is decorated with a double flat ("--") then a parser for a single flat will succeed since it matches the first character of ("--"). Once the parser for a single flat has consumed the first "-" the double-flat parser will never succeed anymore since there's only one "-" left. The way we solve it here is to take into account the ordering in which different parsers will be tried. The ```ScpChoice``` parser always tries out parsers from left to right, and stops trying as soon as one succeeds. So by making sure the double-flat parser runs before the flat parser, we can be sure not to mistake any double flats for a single flat followed by a minus sign.
 
 Note that in some more complex cases it may be difficult to ensure the "correct" parser runs first. For such occasions, there's an alternative parser called ```ScpLongestChoice``` which will try to match all the parsers and keep the one that consumes the most tokens. This is obviously less efficient that just using ```ScpChoice```.
 
-### ScpStrParser
+#### ScpStrParser
 
 Note that instead of using a ```ScpRegexParser``` to match an alteration mark, we here use a simpler ```ScpStrParser```. ```ScpStrParser``` can only do a literal matching of a string (case sensitive only at the time of writing this guide). It is prefered over ```ScpRegexParser``` if applicable since it's less error prone than writing a regex, and a bit more efficient.
 
@@ -242,7 +255,7 @@ var noteModifier = ScpOptional(ScpChoice([
 
 The above code parses the optional alteration mark, and if the ```ScpOptional``` turns up with an empty result (i.e. there's no alteration mark present) the map function makes sure to decorate the parse result with a \\natural note modifier. This ensures that every note will have a \\notemodifier property which I expect will make using the information in the parse result easier later on.
 
-## Parsing the octave
+### Parsing the octave
 
 In addition to an alteration mark, a note name needs an octave in order to be converted to a pitch. For the sake of efficient score creation, we want to make the octave specification optional, i.e. as long as you don't explicitly specify an octave, the previous one should be reused. For this reason, we will use the mapping functionality to record if an octave is explicitly present or not.
 
@@ -256,23 +269,23 @@ var octaveParser = ScpOptional(
 )
 ```
 
-## Parsing the duration
+### Parsing the duration
 
 Duration in Panola is indicated by using an underscore followed by a number. The number indicates a fraction, e.g. *a_4* is a quarter note; *a_8* is an eighth note (i.e. half as long as the quarter note). Durations can be marked up with some modifiers: you can one or more dots (as in regular notation). Every additional dot extends the duration with half of the previous duration, e.g. ```a_4.```  lasts a quarter note + an eighth note, whereas ```a_4..``` lasts a quarter note + an eighth note + a sixteenth note. In addition, one may want to make tuplets, so the duration can also be marked up with a positive multiplier and a positive divider. If you wanted to specify a triplet of eight notes you could write ```a_8*2/3 a a```. Any ratio is allowed, so you can write ```a_8*23/78``` if you desire. 
 
 As with the octave, the duration is optional, and the previous one should be reused while no new one is specified. In addition there are some special rules: if you only specify a divider, the multiplicator is automatically reset to 1. If you only specify a multiplier, the divider is automatically reset to 1.
 
-### ScpMany parser
+#### ScpMany parser
 
 Given that we can have zero or more dots as part of the duration, this is a good time to introduce a new kind of parser: the ```ScpMany``` parser. The ```ScpMany``` parser takes a parser *P* and returns a new parser that matches zero or more instances of *P*. The parse result that comes out of a ```ScpMany``` parser is a list of parse results that come out of *P*. A map function that transforms the result of a ```ScpMany``` parser therefore can address the result as an array.
 
 Here the dots are completely optional, but in some cases you want to ensure that there's at least one match. In such cases you can use the ```ScpManyOne``` variant instead.
 
-### ScpSequenceOf parser
+#### ScpSequenceOf parser
 
 To parse a multiplier, we need to parse a sequence of two different parsers: one parser matches the \* sign, and another parser matches the digits that come after it. Same for the divider: one parser matches the / sign, and another parser matches the digits that come after it. For matching a sequence of parsers we use a ```ScpSequenceOf``` parser. The ```ScpSequenceOf``` parser takes a list of parsers *P, Q,..., Z* and tries to match them one after the other. As soon as one of these parsers fails, the complete ```ScpSequenceOf``` fails. The parse result of a ```ScpSequenceOf``` parser is a list of results, one entry for each parser *P, Q, ..., Z* in the ```ScpSequenceOf``` parser.
 
-### ScpParserFactory
+#### ScpParserFactory
 
 To make life a bit easier, scparco comes with a ```ScpParserFactory``` convenience class that offers some ready-made parsers you may often need. There's nothing special about the parsers in ScpParserFactory, they are made like any parser you'd specify yourself. The duration parser uses the ```ScpParserFactory.makeFloatParser``` and ```ScpParserFactory.makeIntegerParser```. These parsers have a built-in map function that converts the parse result from string to a numerical value already. Nothing prevents you from adding a second map function to further transform the result, and this will be done here.
 
@@ -376,7 +389,7 @@ var propertiesParser = ScpMany(
 )
 ```
 
-## Combining everything
+### Combining everything
 
 Everything we've done so far can now be combined into a parser for a note. I like to work step by step, writing some test code in each step (not shown in this tutorial).
 
@@ -407,11 +420,11 @@ var noteAndModAndOctAndDurAndProp = ScpSequenceOf([
 )
 ```
 
-## From notes to chords
+### From notes to chords
 
 Chords in Panola are defined as a list of notes between angular ```< >``` brackets. In case of chords, Panola will typically only use the properties attached to the first note and reuse them for the other notes in the chord. This is mainly because realizing supercollider patterns with separate properties for every note in a chord is more difficult to implement. If you need multiple notes sounding together with different properties for each, like in polyphonic music e.g., you can make multiple Panola strings (one for each voice) and play them in parallel.
 
-### makeBetween parser
+#### makeBetween parser
 
 Since parsing *something* between delimiters is a common use case, scparco's ```ScpParserFactory``` provides a ```makeBetween``` parser. This makeBetween parser is a bit special, in that it takes a parser that matches the delimiters, and returns a function (not a parser!). This function needs to be called with another ScpParser as argument. This parser must match whatever lives between the delimiters.
 
@@ -460,7 +473,7 @@ var chordParser = betweenChordBrackets.(
 )
 ```
 
-### Pitfall: infinite loops
+#### Pitfall: infinite loops
 
 One has to be careful with optional whitespace parsers not to introduce infinite loops. Here's an example that will send supercollider into an infinite loop:
 
@@ -485,8 +498,7 @@ ScpParserFactory.makeSepBy(ScpParserFactory.makeWsOne).(
 ).run("3,3,3 4,4,4").result
 ```
 
-
-## Parsing a mixture of notes and chords
+### Parsing a mixture of notes and chords
 
 With everything we've developed so far, it is now easy to parse multiple notes and chords:
 
@@ -501,7 +513,7 @@ var notelistParser = ScpManyOne(ScpChoice([
 
 Note: the use of ```ScpManyOne```, which enforces that at least one note or chord is present.
 
-## Handling repeats
+### Handling repeats
 
 A feature of Panola not discussed so far is its syntax to handle repeats. A fragment can be repeated as follows: ```( a- b- c d- )*3```.Repeats can be arbitrarily nested: ```( a3_4 (b c#_8*2/3)*2 d)*3```
 
@@ -517,7 +529,7 @@ It starts with two notes ```a_4 b```, then there's a repeated note list ```(c (b
 
 In what follows, call such panola string a mixed note list. Mixed, because it mixes *normal* notes/chords with *repeated* notes and chords.
 
-### Thunk and forwardRef
+#### Thunk and forwardRef
 
 This problem asks for a recursive solution and that's what we'll use. But there's a problem: we want to parse a mixed list of notes and repeated note list. The mixed list therefore depends on the notion of a repeated note list. But the repeated notelist can again contain a mixed list. We have a chicken and egg problem! Both definitions refer to each other (mutual recursion) and supercollider cannot handle that transparently.
 
@@ -559,7 +571,7 @@ var repeatedNotelist = ScpSequenceOf([
 
 Here the map function is used to already unroll the repeated sections which is not particularly efficient in terms of memory usage but which make postprocessing the parse result easier.
 
-# Conclusion
+## Conclusion
 
 Although not trivial, it is still much easier to read and understand (as well as much more concise and robust!) than the official implementation as it exists in the quark v0.1.1.
 
@@ -569,11 +581,11 @@ Although not trivial, it is still much easier to read and understand (as well as
 
 The work is not finished here. After parsing a Panola string still code is needed to convert the parse result to a supercollider pattern. Such code falls outside the scope of this document, but may become part of a future (re)implementation of Panola based on the scparco parser generator library.
 
-# Appendix A: Panola source code
+## Appendix A: Panola source code
 
 The source code for the Panola quark as it exists today (using an inferior hand-crafted parser) can be found on [https://github.com/shimpe/panola](https://github.com/shimpe/panola).
 
-# Appendix B: full code
+## Appendix B: full code
 
 Here's the full code required to parse a Panola string as developed in this document:
 
