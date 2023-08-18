@@ -1,8 +1,8 @@
-{
+(
   name : "Scparco",
   summary: "Quark to simplify parsing text",
   version: "0.0.3",
   schelp: "Scparco.schelp",
   license: "GPL3",
   copyright: "Stefaan Himpe, 2023"
-}
+)
