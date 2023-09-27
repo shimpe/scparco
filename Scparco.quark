@@ -1,5 +1,5 @@
 (
-  name : "Scparco",
+  name: "Scparco",
   summary: "Quark to simplify parsing text",
   version: "0.0.4",
   schelp: "Scparco.schelp",
