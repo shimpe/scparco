@@ -1,6 +1,6 @@
 TITLE:: ScpParserState
 summary:: holds the internal state of a parser
-categories:: ScpParser Tools
+categories:: Parsing Tools
 related:: Classes/ScpParser
 
 DESCRIPTION::

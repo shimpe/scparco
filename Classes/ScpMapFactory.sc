@@ -2,7 +2,7 @@
 [general]
 title = "ScpMapFactory"
 summary = "a factory for commonly used map functions"
-categories = "ScpParser Tools"
+categories = "Parsing Tools"
 related = "Classes/ScpParser"
 description = '''
 ScpMapFactory is a util that can create commonly used map functions.

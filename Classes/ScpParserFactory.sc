@@ -2,7 +2,7 @@
 [general]
 title = "ScpParserFactory"
 summary = "a factory for commonly used parsers, made from smaller library provided parsers"
-categories = "ScpParser Tools"
+categories = "Parsing Tools"
 related = "Classes/ScpParser"
 description = '''
 ScpParserFactory is a util that can create some parsers and families of parsers for common use cases. These parsers are built as combinations of more primitive library provided parsers. In some cases (e.g. html tag parser), you may want to build your own parser to make it easier to extract all information. ScpParserFactory only implements classmethods, meaning you can call them using the syntax ScpParserFactory.makeIntegerParser (i.e. there's no need to create a ScpParserFactory instance first).

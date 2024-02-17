@@ -1,6 +1,6 @@
 TITLE:: ScpMapFactory
 summary:: a factory for commonly used map functions
-categories:: ScpParser Tools
+categories:: Parsing Tools
 related:: Classes/ScpParser
 
 DESCRIPTION::

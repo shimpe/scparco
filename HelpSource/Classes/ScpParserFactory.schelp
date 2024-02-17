@@ -1,6 +1,6 @@
 TITLE:: ScpParserFactory
 summary:: a factory for commonly used parsers, made from smaller library provided parsers
-categories:: ScpParser Tools
+categories:: Parsing Tools
 related:: Classes/ScpParser
 
 DESCRIPTION::

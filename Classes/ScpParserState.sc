@@ -2,7 +2,7 @@
 [general]
 title = "ScpParserState"
 summary = "holds the internal state of a parser"
-categories = "ScpParser Tools"
+categories = "Parsing Tools"
 related = "Classes/ScpParser"
 description = '''
 ScpParserState uses the internal state of a parser. It has methods to update that state and to pretty-print it.
