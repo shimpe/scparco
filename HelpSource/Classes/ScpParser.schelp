@@ -37,13 +37,16 @@ initializes a new ScpParser
 
 returns:: ScpParser
 METHOD:: run
-runs the ScpParser on a piece of text and produces a ScpParserState. The ScpParserState contains the parse result or error information. Running the parser happens by calling its parserStateTransformer function on an initial state constructed from the target.
+runs the ScpParser on a piece of text and produces a ScpParserState. The ScpParserState contains the parse result or error information. Running the parser happens by calling its parserStateTransformer function on an initial state constructed from the target. When consumeAll is true, the parser must additionally consume the entire input: if it succeeds but leaves trailing/unparsed input, run returns an error instead.
 
 ARGUMENT:: target
 text/Int8Array to be parsed
 
 ARGUMENT:: trace
 boolean to indicate if the parser should log a trace (for debugging)
+
+ARGUMENT:: consumeAll
+boolean; when true, run reports an error if the parser succeeds without consuming the entire input (any leftover/trailing input is treated as an error). Defaults to false. Note: for binary (Int8Array) targets the index counts bits while the target size counts bytes; run accounts for this difference.
 
 returns:: ScpParserState
 METHOD:: map
@@ -94,6 +97,16 @@ METHOD:: errorMap
 	[method.errorMap.args]
 	fn = "user supplied function that receives generic error msg and index in the target at the moment parsing goes wrong, and returns a new error msg"
 	[method.errorMap.returns]
+	what = "ScpParser"
+	
+
+returns:: this instance of ScpParser
+
+METHOD:: errorMapState
+	errorMapState works like errorMap, but the user supplied function receives the entire ScpParserState (at the moment parsing goes wrong) instead of just the error message and index. This gives access to the full context (state.target, state.index, state.errorMsg, ...), so you can build an error message that shows the surrounding input/code. Use errorMap when you only need the message and index; use errorMapState when you want the full state.
+	[method.errorMapState.args]
+	fn = "user supplied function that receives the ScpParserState at the moment parsing goes wrong, and returns a new error msg (a string)"
+	[method.errorMapState.returns]
 	what = "ScpParser"
 	
 

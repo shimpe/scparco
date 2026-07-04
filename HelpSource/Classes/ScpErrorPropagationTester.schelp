@@ -1,0 +1,16 @@
+TITLE:: ScpErrorPropagationTester
+summary:: unit tests verifying that combinators surface the specific deepest sub-parser error
+categories:: Parsing Tools
+related:: Classes/ScpChoice, Classes/ScpSequenceOf, Classes/ScpManyOne, Classes/ScpLongestChoice
+
+DESCRIPTION::
+unit tests verifying that, on failure, combinators report the specific error of the sub-parser that advanced furthest into the input (furthest-failure), instead of substituting a generic message
+
+
+
+
+EXAMPLES::
+
+code::
+(FIXME add some example code)
+::

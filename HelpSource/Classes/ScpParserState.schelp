@@ -28,6 +28,9 @@ boolean to indicate if parsing failed
 ARGUMENT:: errorMsg
 string with some explanation about what error occurred. Error msgs can be made contextual by specifying a n erorrMap on the parser
 
+ARGUMENT:: trace
+boolean to indicate if the parse tree should be printed as parsers are tried out
+
 returns:: a new ScpParserState
 
 INSTANCEMETHODS::
