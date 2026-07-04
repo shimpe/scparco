@@ -51,15 +51,16 @@ ScpParser {
 
 	/*
 	[method.run]
-	description = "runs the ScpParser on a piece of text and produces a ScpParserState. The ScpParserState contains the parse result or error information. Running the parser happens by calling its parserStateTransformer function on an initial state constructed from the target."
+	description = "runs the ScpParser on a piece of text and produces a ScpParserState. The ScpParserState contains the parse result or error information. Running the parser happens by calling its parserStateTransformer function on an initial state constructed from the target. When consumeAll is true, the parser must additionally consume the entire input: if it succeeds but leaves trailing/unparsed input, run returns an error instead."
 	[method.run.args]
 	target = "text/Int8Array to be parsed"
 	trace = "boolean to indicate if the parser should log a trace (for debugging)"
+	consumeAll = "boolean; when true, run reports an error if the parser succeeds without consuming the entire input (any leftover/trailing input is treated as an error). Defaults to false. Note: for binary (Int8Array) targets the index counts bits while the target size counts bytes; run accounts for this difference."
 	[method.run.returns]
 	what = "ScpParserState"
 	*/
 	run {
-		| target, trace=false |
+		| target, trace=false, consumeAll=false |
 		var initialState = ScpParserState(
 			target: target,
 			index: 0,
@@ -68,7 +69,23 @@ ScpParser {
 			errorMsg: "",
 			trace: trace
 		);
-		^this.parserStateTransformer.(initialState);
+		var result = this.parserStateTransformer.(initialState);
+		if (consumeAll) {
+			// index counts characters for text targets, but bits for binary (Int8Array) targets
+			var endIndex = if (target.isKindOf(Int8Array)) { target.size * 8 } { target.size };
+			if (result.isError.not and: { result.index < endIndex }) {
+				var consumeMsg = "run: Error! Expected to consume all input but stopped at index " ++ result.index
+					++ " (" ++ (endIndex - result.index) ++ " unparsed)";
+				// append the note to the parser's own stop reason (if any) instead of replacing it
+				var combinedMsg = if (result.errorMsg.isNil or: { result.errorMsg.isEmpty }) {
+					consumeMsg
+				} {
+					result.errorMsg ++ " -- " ++ consumeMsg
+				};
+				^result.updateError(combinedMsg);
+			};
+		};
+		^result;
 	}
 
 	/*
@@ -194,6 +211,31 @@ ScpParser {
 				nextState;
 			} {
 				nextState.updateError(fn.(nextState.errorMsg, nextState.index));
+			}
+		};
+		^newP;
+	}
+
+	/*
+	[method.errorMapState]
+	description ='''
+	errorMapState works like errorMap, but the user supplied function receives the entire ScpParserState (at the moment parsing goes wrong) instead of just the error message and index. This gives access to the full context (state.target, state.index, state.errorMsg, ...), so you can build an error message that shows the surrounding input/code. Use errorMap when you only need the message and index; use errorMapState when you want the full state.
+	[method.errorMapState.args]
+	fn = "user supplied function that receives the ScpParserState at the moment parsing goes wrong, and returns a new error msg (a string)"
+	[method.errorMapState.returns]
+	what = "ScpParser"
+	'''
+	*/
+	errorMapState {
+		| fn |
+		var newP = ScpParser();
+		newP.parserStateTransformer = {
+			| parserState |
+			var nextState = this.parserStateTransformer.(parserState);
+			if (nextState.isError.not) {
+				nextState;
+			} {
+				nextState.updateError(fn.(nextState));
 			}
 		};
 		^newP;

@@ -56,7 +56,8 @@ ScpManyOne : ScpParser {
 
 				if (results.size == 0) {
 					this.logEndTrace(parserStateIn, "ScpManyOne", false);
-					outputState = nextState.updateError("ScpManyOne: unable to match any parser at index" + nextState.index);
+					// propagate the child parser's specific error instead of a generic message
+					outputState = nextState;
 				} {
 					this.logEndTrace(parserStateIn, "ScpManyOne", true);
 					outputState = nextState.updateResult(results);

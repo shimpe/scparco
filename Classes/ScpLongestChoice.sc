@@ -44,6 +44,9 @@ ScpLongestChoice : ScpParser {
 			} {
 				var bestNextState = parserStateIn;
 				var oneSucceeded = false;
+				// track the alternative that advanced FURTHEST before failing, so we can
+				// surface its specific error when nothing matches
+				var furthestError = nil;
 				this.logStartTrace(parserStateIn, "ScpLongestChoice");
 				parsers.do({
 					| parser, idx |
@@ -55,11 +58,17 @@ ScpLongestChoice : ScpParser {
 						{
 							bestNextState = testState;
 						}
+					} {
+						if (furthestError.isNil or: { testState.index > furthestError.index }) {
+							furthestError = testState;
+						};
 					};
 				});
 				if (oneSucceeded.not) {
 					this.logEndTrace(parserStateIn, "ScpLongestChoice", false);
-					bestNextState = bestNextState.updateError("ScpLongestChoice: unable to match with any parser at index" + parserStateIn.index);
+					bestNextState = furthestError ?? {
+						parserStateIn.updateError("ScpLongestChoice: no parsers to match at index" + parserStateIn.index)
+					};
 				} {
 					this.logEndTrace(parserStateIn, "ScpLongestChoice", true);
 				};

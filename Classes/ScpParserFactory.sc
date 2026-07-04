@@ -292,12 +292,15 @@ ScpParserFactory {
 				var results = [];
 				var nextState = parserState;
 				var keepTrying = true;
+				// remember the value parser's specific error, to surface it if nothing matches
+				var lastValueError = nil;
 				if (parserState.isError) {
 					parserState;
 				}{
 					while ({keepTrying}) {
 						var thingWeWantState = valueParser.parserStateTransformer.(nextState);
 						if (thingWeWantState.isError) {
+							lastValueError = thingWeWantState;
 							keepTrying = false;
 						} {
 							var separatorState;
@@ -313,7 +316,10 @@ ScpParserFactory {
 					};
 
 					if (results.size == 0) {
-						nextState = nextState.updateError("SepByOne: Unable to capture any results at index" + nextState.index);
+						// surface the value parser's specific error instead of a generic message
+						nextState = lastValueError ?? {
+							nextState.updateError("SepByOne: Unable to capture any results at index" + nextState.index)
+						};
 					} {
 						nextState = nextState.updateResult(results);
 					};

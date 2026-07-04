@@ -61,7 +61,9 @@ ScpSequenceOf : ScpParser {
 					outputState = nextState.updateResult(results);
 				} {
 					this.logEndTrace(parserStateIn, "ScpSequenceOf", false);
-					outputState = parserStateIn.updateError("Couldn't match sequence at index" + nextState.index);
+					// propagate the failing sub-parser's specific error (with its deep
+					// index) instead of a generic "Couldn't match sequence" message
+					outputState = nextState;
 				};
 				outputState;
 			};

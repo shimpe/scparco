@@ -37,27 +37,36 @@ ScpChoice : ScpParser {
 		| parsers |
 		this.parserStateTransformer = {
 			| parserStateIn |
-			var outputState;
 			var nextState = parserStateIn;
-			var results = [];
 			if (parserStateIn.isError == true) {
 				parserStateIn;
 			} {
 				var keepTrying = true;
+				// track the alternative that advanced FURTHEST into the input:
+				// its (specific) error is the most relevant one to report
+				var furthestError = nil;
 				this.logStartTrace(parserStateIn, "ScpChoice");
 				parsers.do({
 					| parser, idx |
 					if (keepTrying) {
-						nextState = parser.parserStateTransformer.(parserStateIn);
-					};
-					if (nextState.isError.not)
-					{
-						keepTrying = false;
+						var testState = parser.parserStateTransformer.(parserStateIn);
+						if (testState.isError.not) {
+							nextState = testState;
+							keepTrying = false;
+						} {
+							if (furthestError.isNil or: { testState.index > furthestError.index }) {
+								furthestError = testState;
+							};
+						};
 					};
 				});
-				if (nextState.isError) {
+				if (keepTrying) {
+					// no alternative matched -> surface the furthest-advancing failure
+					// (instead of a generic "unable to match" message)
 					this.logEndTrace(parserStateIn, "ScpChoice", false);
-					nextState = nextState.updateError("ScpChoice: unable to match with any parser at index" + parserStateIn.index);
+					nextState = furthestError ?? {
+						parserStateIn.updateError("ScpChoice: no parsers to match at index" + parserStateIn.index)
+					};
 				} {
 					this.logEndTrace(parserStateIn, "ScpChoice", true);
 				};

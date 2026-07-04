@@ -66,6 +66,7 @@ ScpParserState {
 	result = "result of parsing the string, will be a string by default, but can be transformed by specifying a map on the parser"
 	isError = "boolean to indicate if parsing failed"
 	errorMsg = "string with some explanation about what error occurred. Error msgs can be made contextual by specifying a n erorrMap on the parser"
+	trace = "boolean to indicate if the parse tree should be printed as parsers are tried out"
 	[classmethod.new.returns]
 	what = "a new ScpParserState"
 	*/
